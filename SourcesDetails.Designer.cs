@@ -70,7 +70,6 @@ namespace Ecureuil
             this.panel1 = new System.Windows.Forms.Panel();
             this.sourceDescription = new System.Windows.Forms.Label();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.addSourceButton = new System.Windows.Forms.ToolStripButton();
             this.EnableDisableButton = new System.Windows.Forms.ToolStripButton();
             this.refreshButton = new System.Windows.Forms.ToolStripButton();
             this.sourceBanner.SuspendLayout();
@@ -299,7 +298,6 @@ namespace Ecureuil
             this.viewOptions});
             this.appsToolStrip.Location = new System.Drawing.Point(3, 3);
             this.appsToolStrip.Name = "appsToolStrip";
-            this.appsToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.appsToolStrip.Size = new System.Drawing.Size(472, 25);
             this.appsToolStrip.TabIndex = 2;
             this.appsToolStrip.Text = "toolStrip1";
@@ -307,7 +305,7 @@ namespace Ecureuil
             // OrderBy
             // 
             this.OrderBy.Name = "OrderBy";
-            this.OrderBy.Size = new System.Drawing.Size(56, 22);
+            this.OrderBy.Size = new System.Drawing.Size(54, 22);
             this.OrderBy.Text = "Order by:";
             // 
             // orderByComboBox
@@ -333,7 +331,7 @@ namespace Ecureuil
             // groupBy
             // 
             this.groupBy.Name = "groupBy";
-            this.groupBy.Size = new System.Drawing.Size(59, 22);
+            this.groupBy.Size = new System.Drawing.Size(55, 22);
             this.groupBy.Text = "Group by:";
             // 
             // groupByComboBox
@@ -375,35 +373,35 @@ namespace Ecureuil
             // largeIconsToolStripMenuItem
             // 
             this.largeIconsToolStripMenuItem.Name = "largeIconsToolStripMenuItem";
-            this.largeIconsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.largeIconsToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.largeIconsToolStripMenuItem.Text = "Large icons";
             this.largeIconsToolStripMenuItem.Click += new System.EventHandler(this.largeIconsToolStripMenuItem_Click);
             // 
             // smallIconsToolStripMenuItem
             // 
             this.smallIconsToolStripMenuItem.Name = "smallIconsToolStripMenuItem";
-            this.smallIconsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.smallIconsToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.smallIconsToolStripMenuItem.Text = "Small icons";
             this.smallIconsToolStripMenuItem.Click += new System.EventHandler(this.smallIconsToolStripMenuItem_Click);
             // 
             // detailsToolStripMenuItem
             // 
             this.detailsToolStripMenuItem.Name = "detailsToolStripMenuItem";
-            this.detailsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.detailsToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.detailsToolStripMenuItem.Text = "Details";
             this.detailsToolStripMenuItem.Click += new System.EventHandler(this.detailsToolStripMenuItem_Click);
             // 
             // listToolStripMenuItem
             // 
             this.listToolStripMenuItem.Name = "listToolStripMenuItem";
-            this.listToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.listToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.listToolStripMenuItem.Text = "List";
             this.listToolStripMenuItem.Click += new System.EventHandler(this.listToolStripMenuItem_Click);
             // 
             // tileToolStripMenuItem
             // 
             this.tileToolStripMenuItem.Name = "tileToolStripMenuItem";
-            this.tileToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.tileToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.tileToolStripMenuItem.Text = "Tile";
             this.tileToolStripMenuItem.Click += new System.EventHandler(this.tileToolStripMenuItem_Click);
             // 
@@ -421,9 +419,9 @@ namespace Ecureuil
             // 
             // appSameCategoryList
             // 
-            this.appSameCategoryList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.appSameCategoryList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.appSameCategoryList.FullRowSelect = true;
             this.appSameCategoryList.Location = new System.Drawing.Point(12, 45);
             this.appSameCategoryList.Name = "appSameCategoryList";
@@ -435,8 +433,8 @@ namespace Ecureuil
             // 
             // appSimilarText
             // 
-            this.appSimilarText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.appSimilarText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.appSimilarText.Location = new System.Drawing.Point(12, 26);
             this.appSimilarText.Name = "appSimilarText";
             this.appSimilarText.Size = new System.Drawing.Size(454, 15);
@@ -445,8 +443,8 @@ namespace Ecureuil
             // 
             // appSourceTabText
             // 
-            this.appSourceTabText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.appSourceTabText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.appSourceTabText.Location = new System.Drawing.Point(12, 9);
             this.appSourceTabText.Name = "appSourceTabText";
             this.appSourceTabText.Size = new System.Drawing.Size(454, 15);
@@ -488,7 +486,6 @@ namespace Ecureuil
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addSourceButton,
             this.EnableDisableButton,
             this.refreshButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
@@ -497,15 +494,6 @@ namespace Ecureuil
             this.toolStrip1.Size = new System.Drawing.Size(486, 25);
             this.toolStrip1.TabIndex = 5;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // addSourceButton
-            // 
-            this.addSourceButton.Image = global::Ecureuil.Properties.Resources.add1;
-            this.addSourceButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.addSourceButton.Name = "addSourceButton";
-            this.addSourceButton.Size = new System.Drawing.Size(87, 22);
-            this.addSourceButton.Text = "Add source";
-            this.addSourceButton.Click += new System.EventHandler(this.addSourceButton_Click);
             // 
             // EnableDisableButton
             // 
@@ -602,7 +590,6 @@ namespace Ecureuil
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ListView sourcesAppList;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton addSourceButton;
         private System.Windows.Forms.ToolStripButton EnableDisableButton;
         private System.Windows.Forms.ToolStripButton refreshButton;
     }

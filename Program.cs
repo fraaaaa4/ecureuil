@@ -14,26 +14,7 @@ namespace Ecureuil
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-            Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
-            try
-            {
-                Application.Run(new mainWindow());
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Fatal Error: " + ex.ToString(), "Ecureuil Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
-        {
-            MessageBox.Show("Thread Error: " + (e.Exception != null ? e.Exception.ToString() : "Unknown"), "Ecureuil Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            MessageBox.Show("Domain Error: " + (e.ExceptionObject != null ? e.ExceptionObject.ToString() : "Unknown"), "Ecureuil Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Application.Run(new mainWindow());
         }
     }
 }
