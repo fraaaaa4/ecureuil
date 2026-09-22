@@ -1,39 +1,67 @@
-+using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
+using Ecureuil.Core.Helpers;
 using Ecureuil.Core.Models;
 
 namespace Ecureuil.Core.Services {
   public class CatalogManager {
-    private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions {
-      PropertyNameCaseInsensitive = true
-    };
 
-    //converts index json into a list of AppModel objects
+    // Converte index JSON in lista di AppModel
     public List<AppModel> ParseIndexJson(string jsonContent) {
-      if (string.IsNullOrWhiteSpace(jsonContent)) return new List<AppModel>();
+      if (string.IsNullOrEmpty(jsonContent)) {
+        return new List<AppModel>();
+      }
 
       try {
-        var apps = JsonSerializer.Deserialize<List<AppModel>>(jsonContent, _jsonOptions);
-        return apps ?? new List<AppModel>();
+        List<AppModel> apps = MiniJson.Deserialize<List<AppModel>>(jsonContent);
+        if (apps == null) {
+          return new List<AppModel>();
+        }
+        return apps;
       } catch (Exception ex) {
-        Console.WriteLine($"Can't parse the index json: {ex.Message}");
+        Console.WriteLine("Can't parse the index json: " + ex.Message);
         return new List<AppModel>();
       }
     }
 
-    //converts source json into a source model
+    // Converte source JSON in lista di SourceModel
     public List<SourceModel> ParseSourcesJson(string jsonContent) {
-      if (string.IsNullOrWhiteSpace(jsonContent)) return new List<SourceModel>();
+      if (string.IsNullOrEmpty(jsonContent)) {
+        return new List<SourceModel>();
+      }
 
       try {
-        var sources = JsonSerializer.Deserialize<List<SourceModel>>(jsonContent, _jsonOptions);
-        return sources ?? new List<SourceModel>();
+        List<SourceModel> sources = MiniJson.Deserialize<List<SourceModel>>(jsonContent);
+        if (sources == null) {
+          return new List<SourceModel>();
+        }
+        return sources;
       } catch (Exception ex) {
-        Console.WriteLine($"Can't parse the source json: {ex.Message}");
+        Console.WriteLine("Can't parse the source json: " + ex.Message);
         return new List<SourceModel>();
       }
     }
+
+      public List<sourceDiscoverModel> ParseDiscoveryJson(string jsonContent)
+      {
+          if (string.IsNullOrEmpty(jsonContent))
+          {
+              return new List<sourceDiscoverModel>();
+          }
+          try
+          {
+              List<sourceDiscoverModel> sources = MiniJson.Deserialize<List<sourceDiscoverModel>>(jsonContent);
+              if (sources == null)
+              {
+                  return new List<sourceDiscoverModel>();
+              }
+              return sources;
+          }
+          catch (Exception ex)
+          {
+              Console.WriteLine("Can't parse source JSON: " + ex.Message);
+              return new List<sourceDiscoverModel>();
+          }
+      }
   }
 }

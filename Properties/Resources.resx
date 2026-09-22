@@ -1,0 +1,718 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="about" xml:space="preserve">
+    <value>About -</value>
+  </data>
+  <data name="add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="addSourcesText" xml:space="preserve">
+    <value>You can add new sources by clicking the Add button, or use the Discover feature; this presents a list of available sources from which you can add them.</value>
+  </data>
+  <data name="addSourceURL" xml:space="preserve">
+    <value>Source URL</value>
+  </data>
+  <data name="allFiles" xml:space="preserve">
+    <value>All Files</value>
+  </data>
+  <data name="allWindowsVersion" xml:space="preserve">
+    <value>All Windows versions</value>
+  </data>
+  <data name="appAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="appAuthor" xml:space="preserve">
+    <value>by </value>
+  </data>
+  <data name="appCompatible" xml:space="preserve">
+    <value>Compatible with this system (</value>
+  </data>
+  <data name="appDesktop" xml:space="preserve">
+    <value>Desktop app</value>
+  </data>
+  <data name="appDetailTitle" xml:space="preserve">
+    <value> - Ecureuil</value>
+  </data>
+  <data name="appDeveloper" xml:space="preserve">
+    <value>App developer</value>
+  </data>
+  <data name="appFree" xml:space="preserve">
+    <value>Free</value>
+  </data>
+  <data name="appImmersive" xml:space="preserve">
+    <value>Immersive (Metro/UWP)</value>
+  </data>
+  <data name="appInstaller" xml:space="preserve">
+    <value>Installer package</value>
+  </data>
+  <data name="appLanguageNeutral" xml:space="preserve">
+    <value>Neutral</value>
+  </data>
+  <data name="apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="appNoDescription" xml:space="preserve">
+    <value>No description provided.</value>
+  </data>
+  <data name="appNotCompatible" xml:space="preserve">
+    <value>Not compatible (</value>
+  </data>
+  <data name="appPortable" xml:space="preserve">
+    <value>Portable exe</value>
+  </data>
+  <data name="appSourceColumn1" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="appSourceColumn2" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="appSourceColumn3" xml:space="preserve">
+    <value>Author</value>
+  </data>
+  <data name="appSourceColumn4" xml:space="preserve">
+    <value>Is it compatible?</value>
+  </data>
+  <data name="appSourceCompatible" xml:space="preserve">
+    <value>Compatible</value>
+  </data>
+  <data name="appSourceNotCompatible" xml:space="preserve">
+    <value>Not compatible</value>
+  </data>
+  <data name="appSourceText1" xml:space="preserve">
+    <value>The app comes from </value>
+  </data>
+  <data name="appSourceText2" xml:space="preserve">
+    <value> source, from </value>
+  </data>
+  <data name="appSourceText3" xml:space="preserve">
+    <value> category.</value>
+  </data>
+  <data name="appSourceText4" xml:space="preserve">
+    <value>This app is in the </value>
+  </data>
+  <data name="appSourceTextUploader" xml:space="preserve">
+    <value>Uploader: </value>
+  </data>
+  <data name="appSourceUnknown" xml:space="preserve">
+    <value>unknown</value>
+  </data>
+  <data name="appTrial" xml:space="preserve">
+    <value>Trial</value>
+  </data>
+  <data name="architecture" xml:space="preserve">
+    <value>Architecture: </value>
+  </data>
+  <data name="architecture2" xml:space="preserve">
+    <value>Architecture</value>
+  </data>
+  <data name="author" xml:space="preserve">
+    <value>Author</value>
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="category" xml:space="preserve">
+    <value>Category: </value>
+  </data>
+  <data name="category2" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="compatibility" xml:space="preserve">
+    <value>Compatibility</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="copylink" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\copylink.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="createdOn" xml:space="preserve">
+    <value>Created on: </value>
+  </data>
+  <data name="date" xml:space="preserve">
+    <value>Date:</value>
+  </data>
+  <data name="dateCreated" xml:space="preserve">
+    <value>Date created:</value>
+  </data>
+  <data name="dateFormat" xml:space="preserve">
+    <value>dd/MM/yyyy</value>
+  </data>
+  <data name="dateUpload" xml:space="preserve">
+    <value>Date uploaded:</value>
+  </data>
+  <data name="delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="disable" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\disable.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="disabled2" xml:space="preserve">
+    <value>disabled.</value>
+  </data>
+  <data name="disableSource" xml:space="preserve">
+    <value>Disable source</value>
+  </data>
+  <data name="discoverSources" xml:space="preserve">
+    <value>Discover sources</value>
+  </data>
+  <data name="download" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\download.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="downloadComplete" xml:space="preserve">
+    <value>Download complete.</value>
+  </data>
+  <data name="downloadFailed" xml:space="preserve">
+    <value>Download failed</value>
+  </data>
+  <data name="downloadFile" xml:space="preserve">
+    <value>Download a file</value>
+  </data>
+  <data name="downloadFile2" xml:space="preserve">
+    <value>You're trying to download</value>
+  </data>
+  <data name="downloadFile3" xml:space="preserve">
+    <value>from the source</value>
+  </data>
+  <data name="downloadSourceError" xml:space="preserve">
+    <value>Unable to download application index from:\n</value>
+  </data>
+  <data name="downloadSourceError2" xml:space="preserve">
+    <value>Error downloading source index: </value>
+  </data>
+  <data name="downloadSourceErrorTitle" xml:space="preserve">
+    <value>Download error</value>
+  </data>
+  <data name="downloadURL" xml:space="preserve">
+    <value>Download URLis not available.</value>
+  </data>
+  <data name="ecureuil" xml:space="preserve">
+    <value>Ecureuil</value>
+  </data>
+  <data name="enable" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\enable.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="enabled2" xml:space="preserve">
+    <value>enabled.</value>
+  </data>
+  <data name="enableSource" xml:space="preserve">
+    <value>Enable source</value>
+  </data>
+  <data name="error" xml:space="preserve">
+    <value>Error:</value>
+  </data>
+  <data name="error2" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="extension" xml:space="preserve">
+    <value>Extension: </value>
+  </data>
+  <data name="fileDetails" xml:space="preserve">
+    <value>File details</value>
+  </data>
+  <data name="files" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="firstCategoryNode" xml:space="preserve">
+    <value>Applications</value>
+  </data>
+  <data name="general" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="generalCategory" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="generic" xml:space="preserve">
+    <value>Generic</value>
+  </data>
+  <data name="immersiveApp" xml:space="preserve">
+    <value>Immersive App</value>
+  </data>
+  <data name="immersiveTag" xml:space="preserve">
+    <value>Immersive tag</value>
+  </data>
+  <data name="install" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\install.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="installedSourcesList" xml:space="preserve">
+    <value>List of installed sources:</value>
+  </data>
+  <data name="installer" xml:space="preserve">
+    <value>Installer</value>
+  </data>
+  <data name="languages" xml:space="preserve">
+    <value>Languages</value>
+  </data>
+  <data name="lastUpdated" xml:space="preserve">
+    <value>Last updated:</value>
+  </data>
+  <data name="link" xml:space="preserve">
+    <value>Link</value>
+  </data>
+  <data name="linkError" xml:space="preserve">
+    <value>Unable to open link:</value>
+  </data>
+  <data name="linksName" xml:space="preserve">
+    <value>Links &amp; online references from </value>
+  </data>
+  <data name="localSource" xml:space="preserve">
+    <value>Local source</value>
+  </data>
+  <data name="name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="no" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="notAvailable" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="oepn" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\oepn.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="originalDate" xml:space="preserve">
+    <value>Original date</value>
+  </data>
+  <data name="other" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="portable" xml:space="preserve">
+    <value>Portable</value>
+  </data>
+  <data name="portableTag" xml:space="preserve">
+    <value>Portable tag</value>
+  </data>
+  <data name="progress" xml:space="preserve">
+    <value>Progress</value>
+  </data>
+  <data name="properties" xml:space="preserve">
+    <value>Properties</value>
+  </data>
+  <data name="refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="refresh1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\refresh.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="refreshAll" xml:space="preserve">
+    <value>Refresh all the sources</value>
+  </data>
+  <data name="refreshOnly" xml:space="preserve">
+    <value>Refresh only the selected source(s)</value>
+  </data>
+  <data name="remoteSource" xml:space="preserve">
+    <value>Remote source</value>
+  </data>
+  <data name="save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="saveAs" xml:space="preserve">
+    <value>Save as...</value>
+  </data>
+  <data name="saveAsTooltip" xml:space="preserve">
+    <value>Lets you choose now where to save the file</value>
+  </data>
+  <data name="saveTooltip" xml:space="preserve">
+    <value>Saves the file to the destination specified in Settings</value>
+  </data>
+  <data name="screenshot" xml:space="preserve">
+    <value>Screenshot</value>
+  </data>
+  <data name="secondCategoryNode" xml:space="preserve">
+    <value>Sources</value>
+  </data>
+  <data name="selectDownload" xml:space="preserve">
+    <value>Select download folder</value>
+  </data>
+  <data name="settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="source" xml:space="preserve">
+    <value>Source:</value>
+  </data>
+  <data name="source2" xml:space="preserve">
+    <value> source</value>
+  </data>
+  <data name="sourceDetails" xml:space="preserve">
+    <value>Source details</value>
+  </data>
+  <data name="sourceIsNow" xml:space="preserve">
+    <value>Source is now</value>
+  </data>
+  <data name="sourceRefreshed" xml:space="preserve">
+    <value>Source refreshed successfully.</value>
+  </data>
+  <data name="sourceRefreshFail" xml:space="preserve">
+    <value>Failed to refresh source</value>
+  </data>
+  <data name="sourcesDescription" xml:space="preserve">
+    <value>Manage your installed sources, or discover new ones.</value>
+  </data>
+  <data name="sourcesGroup" xml:space="preserve">
+    <value>Add sources</value>
+  </data>
+  <data name="standardApp" xml:space="preserve">
+    <value>Standard App</value>
+  </data>
+  <data name="thirdCategoryNode" xml:space="preserve">
+    <value>Installed components</value>
+  </data>
+  <data name="time" xml:space="preserve">
+    <value>Time remaining:</value>
+  </data>
+  <data name="timeElapsed" xml:space="preserve">
+    <value>Time elapsed:</value>
+  </data>
+  <data name="uninstall" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\uninstall.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="unknownAuthor" xml:space="preserve">
+    <value>Unknown Author</value>
+  </data>
+  <data name="unknownUploader" xml:space="preserve">
+    <value>Unknown Uploader</value>
+  </data>
+  <data name="uploadedDate" xml:space="preserve">
+    <value>Date uploaded</value>
+  </data>
+  <data name="uploader" xml:space="preserve">
+    <value>Uploader</value>
+  </data>
+  <data name="none" xml:space="preserve">
+    <value>(None)</value>
+  </data>
+  <data name="deleteSourceConfirm" xml:space="preserve">
+    <value>Are you sure you want to remove the source '{0}'?</value>
+  </data>
+  <data name="deleteAllSourcesConfirm" xml:space="preserve">
+    <value>Do you want to delete all installed sources?</value>
+  </data>
+  <data name="confirmDeleteTitle" xml:space="preserve">
+    <value>Confirm Delete</value>
+  </data>
+  <data name="missingUrlTitle" xml:space="preserve">
+    <value>Missing URL</value>
+  </data>
+  <data name="pleaseEnterSourceUrl" xml:space="preserve">
+    <value>Please enter a source URL.</value>
+  </data>
+  <data name="invalidUrlTitle" xml:space="preserve">
+    <value>Invalid URL</value>
+  </data>
+  <data name="urlMustStartWithHttp" xml:space="preserve">
+    <value>The URL must start with http:// or https://</value>
+  </data>
+  <data name="pleaseEnterValidUrl" xml:space="preserve">
+    <value>Please enter a valid URL.</value>
+  </data>
+  <data name="userSourcesIndex" xml:space="preserve">
+    <value>User Sources Index</value>
+  </data>
+  <data name="catalogPrefix" xml:space="preserve">
+    <value>Catalog: </value>
+  </data>
+  <data name="infoPrefix" xml:space="preserve">
+    <value>Info: </value>
+  </data>
+  <data name="sizePrefix" xml:space="preserve">
+    <value>Size: </value>
+  </data>
+  <data name="selectCacheToDelete" xml:space="preserve">
+    <value>Please select at least one cache item to delete.</value>
+  </data>
+  <data name="cacheTitle" xml:space="preserve">
+    <value>Cache</value>
+  </data>
+  <data name="deleteCacheConfirm" xml:space="preserve">
+    <value>Are you sure you want to delete the selected cache files ({0} item(s)) and their cached images?</value>
+  </data>
+  <data name="deleteCacheTitle" xml:space="preserve">
+    <value>Delete cache</value>
+  </data>
+  <data name="refreshAllCacheConfirm" xml:space="preserve">
+    <value>No cache item selected. Do you want to redownload cache for ALL installed sources and applications?</value>
+  </data>
+  <data name="refreshCacheTitle" xml:space="preserve">
+    <value>Refresh Cache</value>
+  </data>
+  <data name="windowsPrefix" xml:space="preserve">
+    <value>Windows </value>
+  </data>
+  <data name="defaultZeroTime" xml:space="preserve">
+    <value>00:00:00</value>
+  </data>
+  <data name="defaultDashTime" xml:space="preserve">
+    <value>--</value>
+  </data>
+  <data name="back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="forward" xml:space="preserve">
+    <value>Forward</value>
+  </data>
+  <data name="searchPlaceholder" xml:space="preserve">
+    <value>Search...</value>
+  </data>
+  <data name="searchTooltip" xml:space="preserve">
+    <value>Search in current view</value>
+  </data>
+  <data name="refreshCurrentTooltip" xml:space="preserve">
+    <value>Refresh current view</value>
+  </data>
+  <data name="orderByLabel" xml:space="preserve">
+    <value>Order by:</value>
+  </data>
+  <data name="groupByLabel" xml:space="preserve">
+    <value>Group by:</value>
+  </data>
+  <data name="version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="toolbar" xml:space="preserve">
+    <value>Toolbar</value>
+  </data>
+  <data name="back1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\back.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="defaultZeroSize" xml:space="preserve">
+    <value>0.0</value>
+  </data>
+  <data name="forward1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\forward.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GroupBy" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GroupBy.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="orderBy" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\orderBy.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="addYourOwn" xml:space="preserve">
+    <value>Learn how to add your own source to the Discovery list</value>
+  </data>
+  <data name="addYourOwn2" xml:space="preserve">
+    <value>Learn more</value>
+  </data>
+  <data name="all_apps" xml:space="preserve">
+    <value>all_apps</value>
+  </data>
+  <data name="app" xml:space="preserve">
+    <value>app</value>
+  </data>
+  <data name="applications" xml:space="preserve">
+    <value>applications</value>
+  </data>
+  <data name="ApplicationsText" xml:space="preserve">
+    <value>Applications</value>
+  </data>
+  <data name="categoryNode" xml:space="preserve">
+    <value>cat</value>
+  </data>
+  <data name="details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="discoverNode" xml:space="preserve">
+    <value>discoverSources</value>
+  </data>
+  <data name="discoveryURL" xml:space="preserve">
+    <value>https://fraaaaa4.github.io/ecureuil-discovery-sources/sources.json</value>
+  </data>
+  <data name="installedNode" xml:space="preserve">
+    <value>installed</value>
+  </data>
+  <data name="open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="source3" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="source4" xml:space="preserve">
+    <value>Sources</value>
+  </data>
+  <data name="sourceMinus" xml:space="preserve">
+    <value>src</value>
+  </data>
+  <data name="sourcesNode" xml:space="preserve">
+    <value>sources</value>
+  </data>
+  <data name="uninstallString" xml:space="preserve">
+    <value>Uninstall</value>
+  </data>
+  <data name="deleteRemove" xml:space="preserve">
+    <value>Delete / Remove</value>
+  </data>
+  <data name="disc" xml:space="preserve">
+    <value>disc</value>
+  </data>
+  <data name="exe" xml:space="preserve">
+    <value>exe</value>
+  </data>
+  <data name="msi" xml:space="preserve">
+    <value>msi</value>
+  </data>
+  <data name="readmeFile" xml:space="preserve">
+    <value>README.md</value>
+  </data>
+  <data name="setupZip" xml:space="preserve">
+    <value>Setup in a file ZIP</value>
+  </data>
+  <data name="setupZipLabel" xml:space="preserve">
+    <value>It looks like you've downloaded a non-portable app, packaged in a zip file. What do you want to do?</value>
+  </data>
+  <data name="uninstallFailure" xml:space="preserve">
+    <value>Failed to uninstall</value>
+  </data>
+  <data name="uninstallQuestion" xml:space="preserve">
+    <value>Are you sure you want to uninstall</value>
+  </data>
+  <data name="uninstallSuccess" xml:space="preserve">
+    <value>uninstalled successfully</value>
+  </data>
+  <data name="uninstallWarning" xml:space="preserve">
+    <value>Since this was installed via a setup, remember to uninstall it from Control Panel.</value>
+  </data>
+  <data name="zip" xml:space="preserve">
+    <value>zip</value>
+  </data>
+  <data name="add1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\add.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sourceAdded" xml:space="preserve">
+    <value>Source added successfully.</value>
+  </data>
+</root>

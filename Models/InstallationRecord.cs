@@ -2,12 +2,47 @@ using System;
 
 namespace Ecureuil.Core.Models {
   public class InstallationRecord {
-    public string AppId { get; set; }
-    public string InstalledVersion { get; set; }
-    public DateTime? InstalledOn { get; set; }
-    public string InstallDirectory { get; set; }
-    public string ShortcutPath { get; set; }
-    public string FileType { get; set; }
-    public string SourceId { get; set; }
+    private string _appId;
+    private string _installedVersion;
+    private DateTime? _installedOn;
+    private string _installDirectory;
+    private string _shortcutPath;
+    private string _fileType;
+    private string _sourceId;
+
+    public string AppId {
+      get { return _appId; }
+      set { _appId = value; }
+    }
+
+    public string InstalledVersion {
+      get { return _installedVersion; }
+      set { _installedVersion = value; }
+    }
+
+    public DateTime? InstalledOn {
+      get { return _installedOn; }
+      set { _installedOn = value; }
+    }
+
+    public string InstallDirectory {
+      get { return _installDirectory; }
+      set { _installDirectory = value; }
+    }
+
+    public string ShortcutPath {
+      get { return _shortcutPath; }
+      set { _shortcutPath = value; }
+    }
+
+    public string FileType {
+      get { return _fileType; }
+      set { _fileType = value; }
+    }
+
+    public string SourceId {
+      get { return _sourceId; }
+      set { _sourceId = value; }
+    }
   }
 }
