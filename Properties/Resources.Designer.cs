@@ -78,6 +78,13 @@ namespace Ecureuil.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap add1 {
+            get {
+                object obj = ResourceManager.GetObject("add1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to You can add new sources by clicking the Add button, or use the Discover feature; this presents a list of available sources from which you can add them..
         /// </summary>
@@ -739,7 +746,7 @@ namespace Ecureuil.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://fraaaaa4.github.io/ecureuil-discovery-sources/sources.json&quot;.
+        ///   Looks up a localized string similar to https://fraaaaa4.github.io/ecureuil-discovery-sources/sources.json.
         /// </summary>
         internal static string discoveryURL {
             get {
@@ -1547,6 +1554,15 @@ namespace Ecureuil.Properties {
         internal static string source4 {
             get {
                 return ResourceManager.GetString("source4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Source added successfully..
+        /// </summary>
+        internal static string sourceAdded {
+            get {
+                return ResourceManager.GetString("sourceAdded", resourceCulture);
             }
         }
         
