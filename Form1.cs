@@ -29,8 +29,10 @@ namespace Ecureuil
         private InstallationRegistry _installationRegistry;
         private InstallerService _installerService;
         private ContextMenuStrip _appItemContextMenu;
+        private ToolStripMenuItem _discoverAddSourceMenuItem;
         private ToolStripMenuItem _appOpenMenuItem;
         private ToolStripMenuItem _appUninstallMenuItem;
+        private ToolStripSeparator _appItemContextMenuSeparator;
         private ToolStripMenuItem _appDetailsMenuItem;
         private bool _showGroupsInApplications = false;
         private List<AppModel> _currentBaseApps;
@@ -143,13 +145,16 @@ namespace Ecureuil
             PopulateNavigationTree();
 
             _appItemContextMenu = new ContextMenuStrip();
+            _discoverAddSourceMenuItem = new ToolStripMenuItem(Resources.add + " " + (Resources.source ?? "source"), null, discoverAddSourceMenuItem_Click);
             _appOpenMenuItem = new ToolStripMenuItem(Resources.open, null, appOpenMenuItem_Click);
             _appUninstallMenuItem = new ToolStripMenuItem(Resources.uninstallString, null, appUninstallMenuItem_Click);
+            _appItemContextMenuSeparator = new ToolStripSeparator();
             _appDetailsMenuItem = new ToolStripMenuItem(Resources.details, null, appDetailsMenuItem_Click);
 
+            _appItemContextMenu.Items.Add(_discoverAddSourceMenuItem);
             _appItemContextMenu.Items.Add(_appOpenMenuItem);
             _appItemContextMenu.Items.Add(_appUninstallMenuItem);
-            _appItemContextMenu.Items.Add(new ToolStripSeparator());
+            _appItemContextMenu.Items.Add(_appItemContextMenuSeparator);
             _appItemContextMenu.Items.Add(_appDetailsMenuItem);
 
             _appItemContextMenu.Opening += new CancelEventHandler(appItemContextMenu_Opening);
@@ -498,6 +503,65 @@ namespace Ecureuil
             });
         }
 
+        public void AddDiscoveredSource(SourceModel sm)
+        {
+            if (sm == null || string.IsNullOrEmpty(sm.url)) return;
+            this.Cursor = Cursors.WaitCursor;
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                try
+                {
+                    if (_loadedSources == null) _loadedSources = new List<SourceModel>();
+                    if (_loadedApps == null) _loadedApps = new List<AppModel>();
+
+                    bool found = false;
+                    for (int j = 0; j < _loadedSources.Count; j++)
+                    {
+                        if (string.Compare(_loadedSources[j].id, sm.id, true) == 0 ||
+                            string.Compare(_loadedSources[j].url, sm.url, true) == 0)
+                        {
+                            _loadedSources[j] = sm;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        _loadedSources.Add(sm);
+                    }
+
+                    LoadAndCacheSourceApps(sm, true);
+
+                    if (this.IsHandleCreated && !this.IsDisposed)
+                    {
+                        this.BeginInvoke(new MethodInvoker(delegate
+                        {
+                            if (_installationRegistry != null && _loadedApps != null)
+                            {
+                                _installationRegistry.ApplyStatusToApps(_loadedApps);
+                            }
+                            SaveInstalledSourcesToSettings();
+                            PopulateNavigationTree();
+                            PopulateInstalledSourcesList();
+                            DisplayApps(_loadedApps, _showGroupsInApplications);
+                            this.Cursor = Cursors.Default;
+                        }));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (this.IsHandleCreated && !this.IsDisposed)
+                    {
+                        this.BeginInvoke(new MethodInvoker(delegate
+                        {
+                            this.Cursor = Cursors.Default;
+                            Console.WriteLine(Resources.error + ex.Message);
+                        }));
+                    }
+                }
+            });
+        }
+
         // add source text; add source when clicking down the Enter key
         private void addSourceContextText_KeyDown(object sender, KeyEventArgs e)
         {
@@ -829,6 +893,9 @@ namespace Ecureuil
         // Populates the left navigation tree with root nodes, dynamic categories, and dynamic sources from index
         private void PopulateNavigationTree()
         {
+            string selectedName = categoryNavigationView.SelectedNode != null ? categoryNavigationView.SelectedNode.Name : null;
+            string selectedTag = categoryNavigationView.SelectedNode != null ? (categoryNavigationView.SelectedNode.Tag as string) : null;
+
             categoryNavigationView.BeginUpdate();
             categoryNavigationView.Nodes.Clear();
 
@@ -1614,12 +1681,37 @@ namespace Ecureuil
                     EventHandler onSrcRefreshed = delegate
                     {
                         PopulateNavigationTree();
+                        PopulateInstalledSourcesList();
+                        RefreshCurrentView();
+                    };
+                    EventHandler onSrcEnabledChanged = delegate
+                    {
+                        if (_loadedSources != null && sm != null)
+                        {
+                            for (int s = 0; s < _loadedSources.Count; s++)
+                            {
+                                if (MatchesSource(_loadedSources[s], sm.id) || MatchesSource(_loadedSources[s], sm.name))
+                                {
+                                    _loadedSources[s].isEnabled = sm.isEnabled;
+                                    break;
+                                }
+                            }
+                        }
+                        SaveInstalledSourcesToSettings();
+                        PopulateNavigationTree();
+                        PopulateInstalledSourcesList();
                         RefreshCurrentView();
                     };
                     sd.SourceRefreshed += onSrcRefreshed;
+                    sd.SourceEnabledChanged += onSrcEnabledChanged;
+                    sd.SourceAddRequested += delegate
+                    {
+                        AddDiscoveredSource(sm);
+                    };
                     sd.FormClosed += delegate
                     {
                         sd.SourceRefreshed -= onSrcRefreshed;
+                        sd.SourceEnabledChanged -= onSrcEnabledChanged;
                         sd.Dispose();
                     };
                     sd.Show();
@@ -1655,12 +1747,49 @@ namespace Ecureuil
             }
 
             ListViewItem lvi = categoryItemView.SelectedItems[0];
+            sourceDiscoverModel disc = lvi.Tag as sourceDiscoverModel;
+            if (disc != null)
+            {
+                _discoverAddSourceMenuItem.Visible = true;
+                _appOpenMenuItem.Visible = false;
+                _appUninstallMenuItem.Visible = false;
+                _appItemContextMenuSeparator.Visible = true;
+                _appDetailsMenuItem.Visible = true;
+                _appDetailsMenuItem.Text = Resources.sourceDetails ?? "Source details";
+
+                bool isAdded = false;
+                if (_loadedSources != null)
+                {
+                    for (int s = 0; s < _loadedSources.Count; s++)
+                    {
+                        if (_loadedSources[s] != null &&
+                            (string.Compare(_loadedSources[s].id, disc.id, true) == 0 ||
+                             string.Compare(_loadedSources[s].name, disc.name, true) == 0))
+                        {
+                            isAdded = true;
+                            break;
+                        }
+                    }
+                }
+
+                _discoverAddSourceMenuItem.Enabled = !isAdded;
+                _discoverAddSourceMenuItem.Text = isAdded ? (Resources.sourceAdded ?? "Source added") : (Resources.add + " " + (Resources.source ?? "source"));
+                return;
+            }
+
             AppModel app = lvi.Tag as AppModel;
             if (app == null)
             {
                 e.Cancel = true;
                 return;
             }
+
+            _discoverAddSourceMenuItem.Visible = false;
+            _appOpenMenuItem.Visible = true;
+            _appUninstallMenuItem.Visible = true;
+            _appItemContextMenuSeparator.Visible = true;
+            _appDetailsMenuItem.Visible = true;
+            _appDetailsMenuItem.Text = Resources.details ?? "Details";
 
             bool isInstalled = app.isInstalled;
             bool isPortableOrZip = (app != null && string.Compare((app.fileType ?? "").TrimStart('.'), Resources.msi, StringComparison.OrdinalIgnoreCase) != 0 && (app.isPortable || string.Compare((app.fileType ?? "").TrimStart('.'), Resources.zip, StringComparison.OrdinalIgnoreCase) == 0));
@@ -1669,6 +1798,21 @@ namespace Ecureuil
             _appUninstallMenuItem.Enabled = isInstalled;
             _appUninstallMenuItem.Text = isPortableOrZip ? Resources.uninstallString : Resources.deleteRemove;
             _appDetailsMenuItem.Enabled = true;
+        }
+
+        private void discoverAddSourceMenuItem_Click(object sender, EventArgs e)
+        {
+            if (categoryItemView.SelectedItems.Count > 0)
+            {
+                ListViewItem item = categoryItemView.SelectedItems[0];
+                sourceDiscoverModel disc = item.Tag as sourceDiscoverModel;
+                if (disc != null)
+                {
+                    SourceModel sm = disc.source;
+                    if (sm == null) sm = new SourceModel(disc.id, disc.name ?? disc.id, disc.author, disc.url, disc.iconURL);
+                    AddDiscoveredSource(sm);
+                }
+            }
         }
 
         private void appOpenMenuItem_Click(object sender, EventArgs e)

@@ -701,6 +701,7 @@ namespace Ecureuil
         }
 
         public event EventHandler SourceEnabledChanged;
+        public event EventHandler SourceAddRequested;
 
         private void UpdateEnabledLabel()
         {
@@ -709,7 +710,18 @@ namespace Ecureuil
                 isEnabled.Visible = false;
                 EnableDisableButton.Visible = false;
                 EnableDisableButton.Enabled = false;
+                if (addSourceButton != null)
+                {
+                    addSourceButton.Visible = true;
+                    addSourceButton.Enabled = true;
+                }
                 return;
+            }
+
+            if (addSourceButton != null)
+            {
+                addSourceButton.Visible = false;
+                addSourceButton.Enabled = false;
             }
 
             isEnabled.Visible = true;
@@ -717,6 +729,29 @@ namespace Ecureuil
             EnableDisableButton.Enabled = true;
             isEnabled.Text = (_model != null && _model.isEnabled) ? Resources.enabled : Resources.disabled;
             EnableDisableButton.Text = (_model != null && _model.isEnabled) ? Resources.disableSource : Resources.enableSource;
+            if (_model != null)
+            {
+                EnableDisableButton.Image = _model.isEnabled ? Resources.disable : Resources.enable;
+            }
+        }
+
+        private void addSourceButton_Click(object sender, EventArgs e)
+        {
+            if (_model == null) return;
+            _isAdded = true;
+            _model.isEnabled = true;
+            UpdateEnabledLabel();
+
+            if (SourceAddRequested != null)
+            {
+                SourceAddRequested(this, EventArgs.Empty);
+            }
+            else if (SourceRefreshed != null)
+            {
+                SourceRefreshed(this, EventArgs.Empty);
+            }
+
+            MessageBox.Show(this, Resources.sourceAdded ?? "Source added successfully.", Resources.ecureuil ?? "Ecureuil", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void EnableDisableButton_Click(object sender, EventArgs e)
@@ -731,8 +766,6 @@ namespace Ecureuil
             }
 
             MessageBox.Show(this, Resources.sourceIsNow + " " + (_model.isEnabled ? Resources.enabled2 : Resources.disabled2), Resources.ecureuil, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            if (_model.isEnabled) EnableDisableButton.Image = Resources.disable;
-            else EnableDisableButton.Image = Resources.enable;
         }
 
         private void refreshButton_Click(object sender, EventArgs e)
