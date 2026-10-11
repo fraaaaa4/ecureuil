@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Ecureuil</RootNamespace>
     <AssemblyName>Ecureuil</AssemblyName>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -19,7 +19,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,7 +28,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -55,6 +55,12 @@
     <Compile Include="Helpers\openImage.cs" />
     <Compile Include="Helpers\OpenSslNative.cs" />
     <Compile Include="Helpers\OSver.cs" />
+    <Compile Include="initialSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="initialSetup.Designer.cs">
+      <DependentUpon>initialSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\AppModel.cs" />
     <Compile Include="Models\SourceModel.cs" />
     <Compile Include="Services\CacheManager.cs" />
@@ -81,6 +87,10 @@
     <EmbeddedResource Include="Form1.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="initialSetup.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>initialSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -150,6 +160,7 @@
     <Content Include="libunwind.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\add.png" />
     <None Include="Resources\GroupBy.png" />
     <None Include="Resources\orderBy.png" />
     <None Include="Resources\back.png" />

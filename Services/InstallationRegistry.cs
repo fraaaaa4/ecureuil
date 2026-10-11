@@ -84,6 +84,18 @@ namespace Ecureuil.Core.Services {
       return _installedApps.ContainsKey(appId);
     }
 
+    public List<InstallationRecord> GetAllRecords() {
+      List<InstallationRecord> list = new List<InstallationRecord>();
+      if (_installedApps != null) {
+        foreach (KeyValuePair<string, InstallationRecord> kvp in _installedApps) {
+          if (kvp.Value != null) {
+            list.Add(kvp.Value);
+          }
+        }
+      }
+      return list;
+    }
+
     public void ApplyStatusToApps(List<AppModel> apps) {
       if (apps == null) return;
 

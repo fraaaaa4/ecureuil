@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Ecureuil.Core.Models;
 using Ecureuil.Properties;
+using Ecureuil.Core.Helpers;
 
 namespace Ecureuil.Core.Services {
   public class InstallerService {
@@ -35,6 +36,108 @@ namespace Ecureuil.Core.Services {
           Directory.CreateDirectory(_defaultInstallPath);
         }
       } catch { }
+    }
+
+    public InstallationRegistry Registry {
+      get { return _installationRegistry; }
+    }
+
+    public AppModel FindAppById(string appId, List<AppModel> loadedApps, CacheManager cacheManager) {
+      return FindApp(null, appId, loadedApps, cacheManager);
+    }
+
+    public AppModel FindApp(string sourceId, string appId, List<AppModel> loadedApps, CacheManager cacheManager) {
+      if (string.IsNullOrEmpty(appId)) return null;
+      appId = appId.Trim();
+      if (!string.IsNullOrEmpty(sourceId)) sourceId = sourceId.Trim();
+
+      // 1. Check in loadedApps
+      if (loadedApps != null) {
+        if (!string.IsNullOrEmpty(sourceId)) {
+          for (int i = 0; i < loadedApps.Count; i++) {
+            if (loadedApps[i] != null &&
+                string.Compare(loadedApps[i].id, appId, true) == 0 &&
+                (string.Compare(loadedApps[i].source, sourceId, true) == 0 ||
+                 (loadedApps[i].source != null && loadedApps[i].source.IndexOf(sourceId, StringComparison.OrdinalIgnoreCase) >= 0))) {
+              return loadedApps[i];
+            }
+          }
+        }
+        for (int i = 0; i < loadedApps.Count; i++) {
+          if (loadedApps[i] != null && string.Compare(loadedApps[i].id, appId, true) == 0) {
+            return loadedApps[i];
+          }
+        }
+      }
+
+      // 2. Check in cacheManager
+      if (cacheManager == null) {
+        try { cacheManager = new CacheManager(); } catch { }
+      }
+
+      if (cacheManager != null && !string.IsNullOrEmpty(cacheManager.CachePath) && Directory.Exists(cacheManager.CachePath)) {
+        CatalogManager cm = new CatalogManager();
+
+        // 2a. Direct app cache
+        try {
+          string appJson = cacheManager.LoadAppCache(appId);
+          if (!string.IsNullOrEmpty(appJson)) {
+            AppModel app = MiniJson.Deserialize<AppModel>(appJson);
+            if (app != null && !string.IsNullOrEmpty(app.id) && string.Compare(app.id, appId, true) == 0) {
+              return app;
+            }
+          }
+        } catch { }
+
+        // 2b. Direct source catalog cache
+        if (!string.IsNullOrEmpty(sourceId)) {
+          try {
+            string srcCatJson = cacheManager.LoadSourceCatalogCache(sourceId);
+            if (!string.IsNullOrEmpty(srcCatJson)) {
+              List<AppModel> apps = cm.ParseIndexJson(srcCatJson);
+              if (apps != null) {
+                for (int a = 0; a < apps.Count; a++) {
+                  if (apps[a] != null && string.Compare(apps[a].id, appId, true) == 0) {
+                    return apps[a];
+                  }
+                }
+              }
+            }
+          } catch { }
+        }
+
+        // 2c. Check all cache catalog and app files
+        try {
+          DirectoryInfo dir = new DirectoryInfo(cacheManager.CachePath);
+          FileInfo[] files = dir.GetFiles("*.json");
+          for (int f = 0; f < files.Length; f++) {
+            string fn = files[f].Name.ToLowerInvariant();
+            if (fn.StartsWith("cache_catalog_") || fn.StartsWith("source_info_")) {
+              try {
+                string json = File.ReadAllText(files[f].FullName);
+                List<AppModel> apps = cm.ParseIndexJson(json);
+                if (apps != null) {
+                  for (int a = 0; a < apps.Count; a++) {
+                    if (apps[a] != null && string.Compare(apps[a].id, appId, true) == 0) {
+                      return apps[a];
+                    }
+                  }
+                }
+              } catch { }
+            } else if (fn.StartsWith("cache_app_") || fn.StartsWith("app_")) {
+              try {
+                string json = File.ReadAllText(files[f].FullName);
+                AppModel app = MiniJson.Deserialize<AppModel>(json);
+                if (app != null && string.Compare(app.id, appId, true) == 0) {
+                  return app;
+                }
+              } catch { }
+            }
+          }
+        } catch { }
+      }
+
+      return null;
     }
 
     private string argsInstall(List<string> installParameters) {
@@ -335,6 +438,51 @@ namespace Ecureuil.Core.Services {
         Console.WriteLine("Error uninstalling " + app.name + ": " + ex.Message);
         return false;
       }
+    }
+
+    public string DefaultInstallPath {
+      get { return _defaultInstallPath; }
+    }
+
+    public bool DeployDependency(string downloadedFilePath, DependencyAction action, string appTargetFolder, string originalFileName) {
+      if (string.IsNullOrEmpty(downloadedFilePath) || !File.Exists(downloadedFilePath)) return false;
+
+      string ext = Path.GetExtension(downloadedFilePath).Trim().ToLower().TrimStart('.');
+      if (string.IsNullOrEmpty(ext) && !string.IsNullOrEmpty(originalFileName)) {
+        ext = Path.GetExtension(originalFileName).Trim().ToLower().TrimStart('.');
+      }
+
+      string targetDir = null;
+      if (action == DependencyAction.Copy) {
+        targetDir = !string.IsNullOrEmpty(appTargetFolder) ? appTargetFolder : _defaultInstallPath;
+      } else if (action == DependencyAction.CopySystem) {
+        targetDir = Environment.GetFolderPath(Environment.SpecialFolder.System);
+      }
+
+      if (!string.IsNullOrEmpty(targetDir)) {
+        try {
+          if (!Directory.Exists(targetDir)) {
+            Directory.CreateDirectory(targetDir);
+          }
+
+          if (ext == "zip") {
+            ExtractZip(downloadedFilePath, targetDir);
+          } else if (ext == "7z") {
+            Extract7z(downloadedFilePath, targetDir);
+          } else {
+            string fileName = !string.IsNullOrEmpty(originalFileName) ? originalFileName : Path.GetFileName(downloadedFilePath);
+            string destPath = Path.Combine(targetDir, fileName);
+            File.Copy(downloadedFilePath, destPath, true);
+          }
+
+          try { File.Delete(downloadedFilePath); } catch { }
+          return true;
+        } catch (Exception ex) {
+          Console.WriteLine("DeployDependency error: " + ex.Message);
+        }
+      }
+
+      return false;
     }
 
     // Estrazione ZIP pura managed in C# (.NET 2.0 / Windows 2000 / RT) con fallback su Shell.Application e 7-Zip

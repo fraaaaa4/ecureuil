@@ -512,7 +512,7 @@
     <value>Uploader</value>
   </data>
   <data name="none" xml:space="preserve">
-    <value>(None)</value>
+    <value>None</value>
   </data>
   <data name="deleteSourceConfirm" xml:space="preserve">
     <value>Are you sure you want to remove the source '{0}'?</value>
@@ -714,5 +714,127 @@
   </data>
   <data name="add1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\add.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="depNotFound" xml:space="preserve">
+    <value>The dependency '{0}'{1} was not found in your installed sources.
+
+Do you want to continue installing {2} anyway?</value>
+  </data>
+  <data name="depFromSource" xml:space="preserve">
+    <value> from source '{0}'</value>
+  </data>
+  <data name="depDownloadError" xml:space="preserve">
+    <value>Failed to download dependency '{0}'.
+
+Do you want to continue installing {1} anyway?</value>
+  </data>
+  <data name="depDownloadUrlError" xml:space="preserve">
+    <value>Failed to download dependency from:
+{0}
+
+Do you want to continue installing {1} anyway?</value>
+  </data>
+  <data name="depMissingTitle" xml:space="preserve">
+    <value>Missing Dependency</value>
+  </data>
+  <data name="depDownloadErrorTitle" xml:space="preserve">
+    <value>Download Error</value>
+  </data>
+  <data name="depDownloading" xml:space="preserve">
+    <value>Downloading dependency: {0}...</value>
+  </data>
+  <data name="depInstalling" xml:space="preserve">
+    <value>Installing dependency: {0}...</value>
+  </data>
+  <data name="depDownloadingUrl" xml:space="preserve">
+    <value>Downloading dependency from {0}...</value>
+  </data>
+  <data name="depInstallingGeneric" xml:space="preserve">
+    <value>Installing dependency...</value>
+  </data>
+  <data name="dependencies" xml:space="preserve">
+    <value>Dependencies</value>
+  </data>
+  <data name="preparingInstallation" xml:space="preserve">
+    <value>Preparing installation for {0}...</value>
+  </data>
+  <data name="downloadingApp" xml:space="preserve">
+    <value>Downloading {0}...</value>
+  </data>
+  <data name="installingApp" xml:space="preserve">
+    <value>Installing {0}...</value>
+  </data>
+  <data name="welcome" xml:space="preserve">
+    <value>Welcome to Ecureuil</value>
+  </data>
+  <data name="welcome1" xml:space="preserve">
+    <value>Your Win32 desktop package manager for many versions of Windows</value>
+  </data>
+  <data name="welcome1Page2" xml:space="preserve">
+    <value>Sources work like on Cydia</value>
+  </data>
+  <data name="welcome1Page3" xml:space="preserve">
+    <value>Order them, group them, filter them, search them</value>
+  </data>
+  <data name="welcome1Page4" xml:space="preserve">
+    <value>Details about the app you've found</value>
+  </data>
+  <data name="welcome2" xml:space="preserve">
+    <value>Ecureuil is a package manager for desktop Windows, aiming at letitng older devices discover and install desktop apps, especially the ones made by the community, in an easier way.
+
+All you need to do is to add sources, search for the apps you want, and hit Install; Ecureuil manages everything else for you.
+
+Before starting, make sure your computer is connected to internet in order to download source and app details, and the app themselves.</value>
+  </data>
+  <data name="welcome2Page2" xml:space="preserve">
+    <value>Sources can be added via the URL given by the developer, or by discovering them directly in Ecureuil. To add an URL, head to the Sources tab, click Add, paste in the URL and add "Add selected source"; once added to Ecureuil, you'll have its apps available for download and install. Alternatively, you have at your disposable a selected amount of sources chosen by the developer, which can be added directly without entering any URL; to see them, head over to the Discover Sources tab, and double click on a source. When you disable a source, you'll not have the apps inside the source to be available to the Apps category.</value>
+  </data>
+  <data name="welcome2Page3" xml:space="preserve">
+    <value>In Ecureuil, you can use multiple tools to find the right app for you. You can choose to show apps only from a certain category, you can choose to order by name, date, size etc. Or you can decide to group them by many variables, including architectures. Not finding the app you're looking for? You might haven't added the source that contains said app, or the developer of the app might not've made an Ecureuil source. Make sure to contact them to let them know to make one!</value>
+  </data>
+  <data name="welcome2Page4" xml:space="preserve">
+    <value>Once you've found the app you're looking for, for each app you have plenty of details at your disposal. You can check out screenshots of the app (which you can open by clicking on an image), you can check install steps and its dependencies (which these will be automatically downloaded and installed), languages in the app, and description. You can also go and visit links put by the developer (to like the homepage, or the developer's page). You can decide to copy its download link, just download the file, or install it; once installed, it'll be available in the "Installed components" category, and will be available in your Start menu too. From the app details page, you can uninstall it directly.</value>
+  </data>
+  <data name="welcomePage2" xml:space="preserve">
+    <value>Add your sources</value>
+  </data>
+  <data name="welcomePage3" xml:space="preserve">
+    <value>Search the app you want</value>
+  </data>
+  <data name="welcomePage4" xml:space="preserve">
+    <value>The app you wanted</value>
+  </data>
+  <data name="sourceNotAddedWarning" xml:space="preserve">
+    <value>You cannot install or download this application because its source has not been added to your sources list. Please add the source first.</value>
+  </data>
+  <data name="sourceNotAddedTitle" xml:space="preserve">
+    <value>Source Not Added</value>
+  </data>
+  <data name="uninstallControlPanelNotice" xml:space="preserve">
+    <value>Since this is installed, remember to uninstall it from Control Panel.</value>
+  </data>
+  <data name="uninstallConfirm" xml:space="preserve">
+    <value>Are you sure you want to uninstall {0}?</value>
+  </data>
+  <data name="uninstallSuccess" xml:space="preserve">
+    <value>{0} uninstalled successfully.</value>
+  </data>
+  <data name="uninstallFail" xml:space="preserve">
+    <value>Failed to uninstall {0}</value>
+  </data>
+  <data name="depCopying" xml:space="preserve">
+    <value>Copying dependency: {0}...</value>
+  </data>
+  <data name="depCopyingSystem" xml:space="preserve">
+    <value>Copying dependency: {0} to Windows...</value>
+  </data>
+  <data name="actionInstall" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="actionCopy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="actionCopySystem" xml:space="preserve">
+    <value>Copy to System</value>
   </data>
 </root>

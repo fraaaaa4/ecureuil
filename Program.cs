@@ -12,6 +12,12 @@ namespace Ecureuil
         [STAThread]
         static void Main()
         {
+            try
+            {
+                System.Net.ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072 | (System.Net.SecurityProtocolType)768 | System.Net.SecurityProtocolType.Tls | System.Net.SecurityProtocolType.Ssl3;
+            }
+            catch { }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new mainWindow());

@@ -269,7 +269,7 @@ namespace Ecureuil
             string srcId = _model.id ?? "";
             string srcName = _model.name ?? "";
 
-            if (_allApps != null)
+            if (_isAdded && _allApps != null)
             {
                 for (int i = 0; i < _allApps.Count; i++)
                 {
@@ -284,9 +284,30 @@ namespace Ecureuil
                 }
             }
 
-            // If this source's apps are not in _allApps, fetch them dynamically from the source URL
-            if (_sourceApps.Count == 0 && !string.IsNullOrEmpty(_model.url) && _downloadService != null)
+            // If the source is not added (or has no apps loaded yet), fetch the full catalog from cache or URL
+            if ((!_isAdded || _sourceApps.Count == 0) && !string.IsNullOrEmpty(_model.url) && _downloadService != null)
             {
+                string cacheKey = !string.IsNullOrEmpty(_model.id) ? _model.id : _model.name;
+                string cachedJson = null;
+                if (_cacheManager != null && !string.IsNullOrEmpty(cacheKey))
+                {
+                    try { cachedJson = _cacheManager.LoadSourceCatalogCache(cacheKey); } catch { }
+                }
+
+                if (!string.IsNullOrEmpty(cachedJson))
+                {
+                    try
+                    {
+                        CatalogManager cm = new CatalogManager();
+                        List<AppModel> cachedApps = cm.ParseIndexJson(cachedJson);
+                        if (cachedApps != null && cachedApps.Count > 0)
+                        {
+                            SetSourceAppsAndMergeInstalled(cachedApps);
+                        }
+                    }
+                    catch { }
+                }
+
                 ThreadPool.QueueUserWorkItem(delegate
                 {
                     try
@@ -294,34 +315,20 @@ namespace Ecureuil
                         string indexJson = _downloadService.DownloadString(_model.url);
                         if (!string.IsNullOrEmpty(indexJson))
                         {
+                            if (_cacheManager != null && !string.IsNullOrEmpty(cacheKey))
+                            {
+                                try { _cacheManager.SaveSourceCatalogCache(cacheKey, indexJson); } catch { }
+                            }
+
                             CatalogManager cm = new CatalogManager();
                             List<AppModel> fetchedApps = cm.ParseIndexJson(indexJson);
                             if (fetchedApps != null && fetchedApps.Count > 0)
                             {
-                                List<AppModel> matchingApps = new List<AppModel>();
-                                for (int a = 0; a < fetchedApps.Count; a++)
-                                {
-                                    AppModel app = fetchedApps[a];
-                                    if (app == null) continue;
-
-                                    if (string.IsNullOrEmpty(app.source))
-                                    {
-                                        app.source = !string.IsNullOrEmpty(srcName) ? srcName : srcId;
-                                    }
-
-                                    if ((!string.IsNullOrEmpty(srcId) && string.Compare(app.source, srcId, true) == 0) ||
-                                        (!string.IsNullOrEmpty(srcName) && string.Compare(app.source, srcName, true) == 0))
-                                    {
-                                        matchingApps.Add(app);
-                                    }
-                                }
-
                                 if (!this.IsDisposed && this.IsHandleCreated)
                                 {
                                     this.BeginInvoke(new MethodInvoker(delegate
                                     {
-                                        _sourceApps.Clear();
-                                        _sourceApps.AddRange(matchingApps);
+                                        SetSourceAppsAndMergeInstalled(fetchedApps);
                                         ApplyFilterAndDisplay();
                                     }));
                                 }
@@ -330,6 +337,46 @@ namespace Ecureuil
                     }
                     catch { }
                 });
+            }
+        }
+
+        private void SetSourceAppsAndMergeInstalled(List<AppModel> apps)
+        {
+            if (apps == null) return;
+            string srcId = _model != null ? (_model.id ?? "") : "";
+            string srcName = _model != null ? (_model.name ?? "") : "";
+
+            _sourceApps.Clear();
+            for (int a = 0; a < apps.Count; a++)
+            {
+                AppModel app = apps[a];
+                if (app == null) continue;
+
+                if (string.IsNullOrEmpty(app.source))
+                {
+                    app.source = !string.IsNullOrEmpty(srcName) ? srcName : srcId;
+                }
+
+                if ((!string.IsNullOrEmpty(srcId) && string.Compare(app.source, srcId, true) == 0) ||
+                    (!string.IsNullOrEmpty(srcName) && string.Compare(app.source, srcName, true) == 0))
+                {
+                    if (_allApps != null)
+                    {
+                        for (int ex = 0; ex < _allApps.Count; ex++)
+                        {
+                            AppModel exApp = _allApps[ex];
+                            if (exApp != null && string.Compare(exApp.id, app.id, true) == 0)
+                            {
+                                app.isInstalled = exApp.isInstalled;
+                                app.installedOn = exApp.installedOn;
+                                app.installedShortcutPath = exApp.installedShortcutPath;
+                                app.installDirectory = exApp.installDirectory;
+                                break;
+                            }
+                        }
+                    }
+                    _sourceApps.Add(app);
+                }
             }
         }
 
@@ -670,7 +717,7 @@ namespace Ecureuil
                     }
 
                     List<SourceModel> srcList = null;
-                    if (_model != null)
+                    if (_model != null && _isAdded)
                     {
                         srcList = new List<SourceModel>();
                         srcList.Add(_model);

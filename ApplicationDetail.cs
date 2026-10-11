@@ -113,12 +113,20 @@ namespace Ecureuil
             UpdateToolbarState();
         }
 
+        private bool IsSourceAdded()
+        {
+            if (_item == null || string.IsNullOrEmpty(_item.source)) return false;
+            return FindSourceModel(_item.source, false) != null;
+        }
+
         private void UpdateToolbarState()
         {
             bool installed = (_item != null && _item.isInstalled);
             bool isPortableOrZip = (_item != null && string.Compare((_item.fileType ?? "").TrimStart('.'), "msi", StringComparison.OrdinalIgnoreCase) != 0 && (_item.isPortable || string.Compare((_item.fileType ?? "").TrimStart('.'), "zip", StringComparison.OrdinalIgnoreCase) == 0));
+            bool sourceAdded = IsSourceAdded();
+            bool isCompatible = (_item == null) || (OSver.IsAppCompatible(_item.compatibility) && OSver.IsArchCompatible(_item.architecture));
 
-            installToolbarButton.Enabled = !installed;
+            installToolbarButton.Enabled = !installed && sourceAdded && isCompatible;
             openAppToolbarButton.Enabled = installed && isPortableOrZip && (!string.IsNullOrEmpty(_item.installedShortcutPath) || !string.IsNullOrEmpty(_item.installDirectory));
             uninstallToolbarButton.Enabled = installed;
         }
@@ -351,10 +359,62 @@ namespace Ecureuil
                 langNode.Nodes.Add(Resources.appLanguageNeutral);
             }
 
+            TreeNode depNode = new TreeNode(Resources.dependencies);
+            if (item.dependencies != null && item.dependencies.Count > 0)
+            {
+                for (int d = 0; d < item.dependencies.Count; d++)
+                {
+                    string dep = item.dependencies[d];
+                    if (!string.IsNullOrEmpty(dep))
+                    {
+                        DependencySpec spec = DependencySpec.Parse(dep);
+                        if (spec != null)
+                        {
+                            if (spec.IsActionable)
+                            {
+                                string actionPrefix = "";
+                                if (spec.Action == DependencyAction.Copy) actionPrefix = "[" + (Resources.actionCopy ?? "Copy") + "] ";
+                                else if (spec.Action == DependencyAction.CopySystem) actionPrefix = "[" + (Resources.actionCopySystem ?? "Copy to System") + "] ";
+                                else actionPrefix = "[" + (Resources.actionInstall ?? "Install") + "] ";
+
+                                if (spec.IsEcureuil)
+                                {
+                                    if (!string.IsNullOrEmpty(spec.SourceId))
+                                    {
+                                        depNode.Nodes.Add(actionPrefix + (Resources.ecureuil ?? "Ecureuil") + " (" + spec.SourceId + "): " + spec.AppId);
+                                    }
+                                    else
+                                    {
+                                        depNode.Nodes.Add(actionPrefix + (Resources.ecureuil ?? "Ecureuil") + ": " + spec.AppId);
+                                    }
+                                }
+                                else
+                                {
+                                    depNode.Nodes.Add(actionPrefix + spec.Target);
+                                }
+                            }
+                            else
+                            {
+                                depNode.Nodes.Add(spec.Target);
+                            }
+                        }
+                        else
+                        {
+                            depNode.Nodes.Add(dep);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                depNode.Nodes.Add(Resources.none);
+            }
+
             detailsTreeView.Nodes.Add(sourceNode);
             detailsTreeView.Nodes.Add(fileNode);
             detailsTreeView.Nodes.Add(compatNode);
             detailsTreeView.Nodes.Add(langNode);
+            detailsTreeView.Nodes.Add(depNode);
             detailsTreeView.ExpandAll();
             detailsTreeView.EndUpdate();
 
@@ -536,6 +596,12 @@ namespace Ecureuil
 
         private void downloadFile_Click(object sender, EventArgs e)
         {
+            if (_item == null) return;
+            if (!IsSourceAdded())
+            {
+                MessageBox.Show(this, Resources.sourceNotAddedWarning ?? "You cannot install or download this application because its source has not been added to your sources list. Please add the source first.", Resources.sourceNotAddedTitle ?? "Source Not Added", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             string dateOrigStr = (_item != null && _item.dateOriginal.HasValue) ? _item.dateOriginal.Value.ToString(Resources.dateFormat) : "-";
             string dateSrcStr = (_item != null && _item.dateSource.HasValue) ? _item.dateSource.Value.ToString(Resources.dateFormat) : "-";
             URLdownload download = new URLdownload(_item.name, _item.source, _item.downloadUrl, _item.fileType, dateOrigStr, dateSrcStr, _item.size);
@@ -562,6 +628,11 @@ namespace Ecureuil
 
         private SourceModel FindSourceModel(string sourceNameOrId)
         {
+            return FindSourceModel(sourceNameOrId, true);
+        }
+
+        private SourceModel FindSourceModel(string sourceNameOrId, bool createFallback)
+        {
             if (string.IsNullOrEmpty(sourceNameOrId)) return null;
 
             if (_loadedSources != null)
@@ -584,8 +655,7 @@ namespace Ecureuil
                     string userSourcesJson = _cacheManager.LoadUserSources();
                     if (!string.IsNullOrEmpty(userSourcesJson))
                     {
-                        CatalogManager cm = new CatalogManager();
-                        List<SourceModel> parsed = cm.ParseSourcesJson(userSourcesJson);
+                        List<SourceModel> parsed = new CatalogManager().ParseSourcesJson(userSourcesJson);
                         if (parsed != null)
                         {
                             for (int i = 0; i < parsed.Count; i++)
@@ -603,11 +673,13 @@ namespace Ecureuil
                 catch { }
             }
 
+            if (!createFallback) return null;
+
             SourceModel fallback = new SourceModel();
             fallback.id = sourceNameOrId;
             fallback.name = sourceNameOrId;
-            fallback.author = "Unknown";
-            fallback.description = "Source " + sourceNameOrId;
+            fallback.author = Resources.unknownAuthor ?? "Unknown";
+            fallback.description = (Resources.source3 ?? "Source") + " " + sourceNameOrId;
             fallback.isEnabled = true;
             fallback.dateCreated = DateTime.Now;
             fallback.lastUpdated = DateTime.Now;
@@ -666,9 +738,19 @@ namespace Ecureuil
         private void installToolbarButton_Click(object sender, EventArgs e)
         {
             if (_item == null) return;
+            if (!OSver.IsAppCompatible(_item.compatibility) || !OSver.IsArchCompatible(_item.architecture))
+            {
+                MessageBox.Show(this, Resources.appSourceNotCompatible ?? "This application is not compatible with your operating system or architecture.", Resources.compatibility ?? "Compatibility", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (!IsSourceAdded())
+            {
+                MessageBox.Show(this, Resources.sourceNotAddedWarning ?? "You cannot install or download this application because its source has not been added to your sources list. Please add the source first.", Resources.sourceNotAddedTitle ?? "Source Not Added", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (_installerService == null) _installerService = new InstallerService(_installationRegistry ?? new InstallationRegistry());
 
-            URLdownload installerForm = new URLdownload(_item, _installerService);
+            URLdownload installerForm = new URLdownload(_item, _installerService, _loadedApps, _cacheManager);
             installerForm.Location = this.Location;
             if (installerForm.ShowDialog(this) == DialogResult.OK)
             {
@@ -731,11 +813,12 @@ namespace Ecureuil
 
                 UpdateToolbarState();
                 InstallerService.OpenAddRemovePrograms();
-                MessageBox.Show(this, "Since this is installed, remember to uninstall it from Control Panel.", Resources.ecureuil ?? "Ecureuil", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(this, Resources.uninstallControlPanelNotice ?? "Since this is installed, remember to uninstall it from Control Panel.", Resources.ecureuil ?? "Ecureuil", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                DialogResult dr = MessageBox.Show(this, "Are you sure you want to uninstall " + (_item.name ?? _item.id) + "?", Resources.ecureuil ?? "Ecureuil", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                string confirmMsg = string.Format(Resources.uninstallConfirm ?? "Are you sure you want to uninstall {0}?", _item.name ?? _item.id);
+                DialogResult dr = MessageBox.Show(this, confirmMsg, Resources.ecureuil ?? "Ecureuil", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (dr == DialogResult.Yes)
                 {
                     if (_installerService == null) _installerService = new InstallerService(_installationRegistry ?? new InstallationRegistry());
@@ -744,11 +827,13 @@ namespace Ecureuil
                     if (uninstalled)
                     {
                         UpdateToolbarState();
-                        MessageBox.Show(this, (_item.name ?? _item.id) + " uninstalled successfully.", Resources.ecureuil ?? "Ecureuil", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        string successMsg = string.Format(Resources.uninstallSuccess ?? "{0} uninstalled successfully.", _item.name ?? _item.id);
+                        MessageBox.Show(this, successMsg, Resources.ecureuil ?? "Ecureuil", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
-                        MessageBox.Show(this, "Failed to uninstall " + (_item.name ?? _item.id), Resources.error ?? "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        string failMsg = string.Format(Resources.uninstallFail ?? "Failed to uninstall {0}", _item.name ?? _item.id);
+                        MessageBox.Show(this, failMsg, Resources.error ?? "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }

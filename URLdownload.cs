@@ -36,6 +36,9 @@ namespace Ecureuil
         private long _totalBytes = 0;
         private int _currentPercentage = 0;
 
+        private List<AppModel> _loadedApps = null;
+        private CacheManager _cacheManager = null;
+
         public URLdownload(String _appName, String _sourceName, String _downloadURL, String _extension, String _dateOriginal, String _dateUpload, long _sizeItem)
         {
             InitializeComponent();
@@ -48,11 +51,22 @@ namespace Ecureuil
             sizeItem = _sizeItem;
         }
 
-        public URLdownload(AppModel app, InstallerService installerService)
-            : this(app.name, app.source, app.downloadUrl, app.fileType, app.dateOriginal.HasValue ? app.dateOriginal.Value.ToString("dd/MM/yyyy") : "-",
-            app.dateSource.HasValue ? app.dateSource.Value.ToString("dd/MM/yyyy") : "-", app.size)
+        public URLdownload(AppModel app, InstallerService installerService, List<AppModel> loadedApps, CacheManager cacheManager)
+            : this(app != null ? app.name : null, app != null ? app.source : null, app != null ? app.downloadUrl : null, app != null ? app.fileType : null,
+            (app != null && app.dateOriginal.HasValue) ? app.dateOriginal.Value.ToString("dd/MM/yyyy") : "-",
+            (app != null && app.dateSource.HasValue) ? app.dateSource.Value.ToString("dd/MM/yyyy") : "-",
+            app != null ? app.size : 0)
         {
-            _autoInstall = true; _appModel = app; _installerService = installerService;
+            _autoInstall = true;
+            _appModel = app;
+            _installerService = installerService;
+            _loadedApps = loadedApps;
+            _cacheManager = cacheManager;
+        }
+
+        public URLdownload(AppModel app, InstallerService installerService)
+            : this(app, installerService, null, null)
+        {
         }
 
         private void URLdownload_Load(object sender, EventArgs e)
@@ -84,11 +98,19 @@ namespace Ecureuil
             if (_autoInstall)
             {
                 saveButton.Visible = false;
-                this.Text = "Installing - " + appName;
-                downloadLabel1.Text = "Download and installing " + appName + "...";
-                string ext = !string.IsNullOrEmpty(extension) ? extension.TrimStart('.') : "tmp";
-                string tempPath = Path.Combine(Path.GetTempPath(), "ecureuil_" + (_appModel.id ?? "app") + "." + ext);
-                StartDownload(tempPath);
+                this.Text = (Resources.installer ?? "Installing") + " - " + appName;
+                downloadLabel1.Text = string.Format(Resources.preparingInstallation, appName);
+                
+                _isDownloading = true;
+                _isCancelled = false;
+                saveButton.Enabled = false;
+                downloadProgress.Value = 0;
+                _stopwatch.Reset();
+                _stopwatch.Start();
+
+                _downloadThread = new Thread(new ThreadStart(AutoInstallWorker));
+                _downloadThread.IsBackground = true;
+                _downloadThread.Start();
             }
         }
 
@@ -210,6 +232,99 @@ namespace Ecureuil
             _downloadThread.Start(destinationPath);
         }
 
+        private void UpdateStatusUI(string text)
+        {
+            if (this.IsDisposed || !this.IsHandleCreated) return;
+            try
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    if (this.IsDisposed) return;
+                    downloadLabel1.Text = text;
+                    downloadProgress.Value = 0;
+                    sizeText.Text = Resources.defaultZeroSize;
+                    timeEplasedText.Text = Resources.defaultZeroTime;
+                    timeRemainingText.Text = Resources.defaultDashTime;
+                }));
+            }
+            catch { }
+        }
+
+        private void SetProgressMarquee(bool marquee)
+        {
+            if (this.IsDisposed || !this.IsHandleCreated) return;
+            try
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    if (this.IsDisposed) return;
+                    downloadProgress.Style = marquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Blocks;
+                }));
+            }
+            catch { }
+        }
+
+        private void AutoInstallWorker()
+        {
+            DownloadService downloadService = new DownloadService(60);
+
+            // 1. Process Dependencies if any
+            if (_appModel != null && _appModel.dependencies != null && _appModel.dependencies.Count > 0)
+            {
+                string mainAppTargetFolder = Path.Combine(_installerService != null ? _installerService.DefaultInstallPath : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "EcureuilApps"), _appModel.id);
+
+                for (int i = 0; i < _appModel.dependencies.Count; i++)
+                {
+                    if (_isCancelled) return;
+                    string rawDep = _appModel.dependencies[i];
+                    if (string.IsNullOrEmpty(rawDep)) continue;
+
+                    DependencySpec spec = DependencySpec.Parse(rawDep);
+                    if (spec == null) continue;
+
+                    if (!ProcessSingleDependency(spec, downloadService, mainAppTargetFolder))
+                    {
+                        _isCancelled = true;
+                        try { this.BeginInvoke(new MethodInvoker(delegate { this.Close(); })); } catch { }
+                        return;
+                    }
+                }
+            }
+
+            if (_isCancelled) return;
+
+            // 2. Download Main App
+            UpdateStatusUI(string.Format(Resources.downloadingApp, appName));
+            string mainExt = !string.IsNullOrEmpty(extension) ? extension.TrimStart('.') : "tmp";
+            string mainTempPath = Path.Combine(Path.GetTempPath(), "ecureuil_" + (_appModel != null && _appModel.id != null ? _appModel.id : "app") + "." + mainExt);
+
+            bool success = false;
+            string errorMsg = null;
+            try
+            {
+                success = downloadService.DownloadFile(downloadURL, mainTempPath, OnDownloadProgress);
+            }
+            catch (Exception ex)
+            {
+                errorMsg = ex.Message;
+                success = false;
+            }
+
+            _stopwatch.Stop();
+
+            if (!_isCancelled)
+            {
+                try
+                {
+                    this.BeginInvoke(new MethodInvoker(delegate()
+                    {
+                        OnDownloadCompleted(success, mainTempPath, errorMsg);
+                    }));
+                }
+                catch { }
+            }
+        }
+
         private void DownloadWorker(object targetPathObj)
         {
             string destinationPath = (string)targetPathObj;
@@ -308,7 +423,7 @@ namespace Ecureuil
             {
                 if (_autoInstall && _installerService != null && _appModel != null)
                 {
-                    downloadLabel1.Text = "Installing " + appName + "...";
+                    downloadLabel1.Text = string.Format(Resources.installingApp, appName);
                     downloadProgress.Style = ProgressBarStyle.Marquee;
 
                     ThreadPool.QueueUserWorkItem(delegate
@@ -347,6 +462,119 @@ namespace Ecureuil
             {
                 MessageBox.Show(this, Resources.downloadFailed + (errorMsg != null ? (": " + errorMsg) : "."), Resources.error2, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private bool ProcessSingleDependency(DependencySpec spec, DownloadService downloadService, string mainAppTargetFolder)
+        {
+            string depName = null;
+            string downloadUrl = null;
+            string fileType = "tmp";
+            string origFileName = null;
+            AppModel targetApp = null;
+
+            if (spec.IsEcureuil && !string.IsNullOrEmpty(spec.AppId))
+            {
+                if (_cacheManager == null)
+                {
+                    try { _cacheManager = new CacheManager(); } catch { }
+                }
+
+                targetApp = _installerService != null ? _installerService.FindApp(spec.SourceId, spec.AppId, _loadedApps, _cacheManager) : null;
+                if (targetApp == null || string.IsNullOrEmpty(targetApp.downloadUrl))
+                {
+                    string srcMsg = !string.IsNullOrEmpty(spec.SourceId) ? string.Format(Resources.depFromSource, spec.SourceId) : "";
+                    return PromptContinueOnMissing(string.Format(Resources.depNotFound, spec.AppId, srcMsg, appName), Resources.depMissingTitle);
+                }
+
+                depName = targetApp.name ?? targetApp.id;
+                downloadUrl = targetApp.downloadUrl;
+                fileType = !string.IsNullOrEmpty(targetApp.fileType) ? targetApp.fileType.TrimStart('.') : "tmp";
+                origFileName = depName + "." + fileType;
+            }
+            else if (!string.IsNullOrEmpty(spec.HttpUrl))
+            {
+                downloadUrl = spec.HttpUrl;
+                try
+                {
+                    Uri u = new Uri(spec.HttpUrl);
+                    origFileName = Path.GetFileName(u.AbsolutePath);
+                    string p = Path.GetExtension(u.AbsolutePath);
+                    if (!string.IsNullOrEmpty(p)) fileType = p.TrimStart('.');
+                }
+                catch { }
+                if (string.IsNullOrEmpty(origFileName)) origFileName = "dep_" + Guid.NewGuid().ToString("N").Substring(0, 8) + "." + fileType;
+                depName = origFileName;
+            }
+            else
+            {
+                return true;
+            }
+
+            UpdateStatusUI(string.Format(Resources.depDownloading, depName));
+            string depTempPath = Path.Combine(Path.GetTempPath(), "ecureuil_dep_" + Guid.NewGuid().ToString("N") + "." + fileType);
+
+            bool dlSuccess = downloadService.DownloadFile(downloadUrl, depTempPath, OnDownloadProgress);
+            if (dlSuccess && File.Exists(depTempPath) && !_isCancelled)
+            {
+                SetProgressMarquee(true);
+                if (spec.Action == DependencyAction.Install)
+                {
+                    UpdateStatusUI(string.Format(Resources.depInstalling, depName));
+                    if (_installerService != null)
+                    {
+                        if (targetApp == null)
+                        {
+                            targetApp = new AppModel();
+                            targetApp.id = "dep_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+                            targetApp.name = Path.GetFileNameWithoutExtension(origFileName);
+                            targetApp.fileType = fileType;
+                            targetApp.isPortable = false;
+                        }
+                        _installerService.InstallApp(targetApp, depTempPath);
+                    }
+                }
+                else
+                {
+                    string statusMsg = (spec.Action == DependencyAction.CopySystem)
+                        ? string.Format(Resources.depCopyingSystem ?? "Copying dependency: {0} to Windows...", depName)
+                        : string.Format(Resources.depCopying ?? "Copying dependency: {0}...", depName);
+                    UpdateStatusUI(statusMsg);
+                    if (_installerService != null)
+                    {
+                        _installerService.DeployDependency(depTempPath, spec.Action, mainAppTargetFolder, origFileName);
+                    }
+                }
+                SetProgressMarquee(false);
+                return true;
+            }
+            else if (!_isCancelled)
+            {
+                string errMsg = (spec.IsEcureuil)
+                    ? string.Format(Resources.depDownloadError, depName, appName)
+                    : string.Format(Resources.depDownloadUrlError, downloadUrl, appName);
+                return PromptContinueOnMissing(errMsg, Resources.depDownloadErrorTitle);
+            }
+
+            return false;
+        }
+
+        private bool PromptContinueOnMissing(string message, string title)
+        {
+            bool continueAnyway = false;
+            try
+            {
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    DialogResult dr = MessageBox.Show(this,
+                        message,
+                        title + " - " + (Resources.ecureuil ?? "Ecureuil"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning);
+                    continueAnyway = (dr == DialogResult.Yes);
+                }));
+            }
+            catch { }
+            return continueAnyway;
         }
 
         private void cancelButton_Click(object sender, EventArgs e)

@@ -105,6 +105,11 @@ namespace Ecureuil.Core.Helpers {
     }
 
     private static bool CheckAvailability() {
+      if (IntPtr.Size != 4) {
+        _initErrorMessage = "OpenSSL native DLLs are 32-bit; current process is 64-bit.";
+        return false;
+      }
+
       string appDir = AppDomain.CurrentDomain.BaseDirectory;
       string cryptoPath = Path.Combine(appDir, "libcrypto-3.dll");
       string sslPath = Path.Combine(appDir, "libssl-3.dll");

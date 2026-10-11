@@ -116,10 +116,70 @@ namespace Ecureuil
 
                 if (_installationRegistry != null && _loadedApps != null)
                 {
+                    LoadOrphanInstalledApps();
                     _installationRegistry.ApplyStatusToApps(_loadedApps);
                 }
             }
             catch { }
+        }
+
+        private void LoadOrphanInstalledApps()
+        {
+            if (_installationRegistry == null) return;
+            List<InstallationRecord> records = _installationRegistry.GetAllRecords();
+            if (records == null || records.Count == 0) return;
+
+            if (_loadedApps == null) _loadedApps = new List<AppModel>();
+
+            for (int r = 0; r < records.Count; r++)
+            {
+                InstallationRecord rec = records[r];
+                if (rec == null || string.IsNullOrEmpty(rec.AppId)) continue;
+
+                bool exists = false;
+                for (int a = 0; a < _loadedApps.Count; a++)
+                {
+                    if (_loadedApps[a] != null && string.Compare(_loadedApps[a].id, rec.AppId, true) == 0)
+                    {
+                        exists = true;
+                        break;
+                    }
+                }
+
+                if (!exists)
+                {
+                    AppModel cachedApp = null;
+                    if (_cacheManager != null)
+                    {
+                        try
+                        {
+                            string json = _cacheManager.LoadAppCache(rec.AppId);
+                            if (!string.IsNullOrEmpty(json))
+                            {
+                                cachedApp = MiniJson.Deserialize<AppModel>(json);
+                            }
+                        }
+                        catch { }
+                    }
+
+                    if (cachedApp == null)
+                    {
+                        cachedApp = new AppModel();
+                        cachedApp.id = rec.AppId;
+                        cachedApp.name = rec.AppId;
+                        cachedApp.version = rec.InstalledVersion;
+                        cachedApp.source = rec.SourceId;
+                        cachedApp.fileType = rec.FileType;
+                    }
+
+                    cachedApp.isInstalled = true;
+                    cachedApp.installedOn = rec.InstalledOn;
+                    cachedApp.installedShortcutPath = rec.ShortcutPath;
+                    cachedApp.installDirectory = rec.InstallDirectory;
+
+                    _loadedApps.Add(cachedApp);
+                }
+            }
         }
 
         // save the sources installed to the cache or Settings
@@ -352,7 +412,7 @@ namespace Ecureuil
                 string cacheKey = !string.IsNullOrEmpty(sm.id) ? sm.id : sm.name;
                 string indexJson = null;
 
-                if (!forceDownload && _cacheManager != null && _cacheManager.isSourceCacheValid(cacheKey, TimeSpan.FromHours(24)))
+                if (!forceDownload && _cacheManager != null && _cacheManager.isSourceCacheValid(cacheKey, TimeSpan.FromHours(Settings.Default.maxAge)))
                 {
                     indexJson = _cacheManager.LoadSourceCatalogCache(cacheKey);
                 }
@@ -441,64 +501,20 @@ namespace Ecureuil
 
                         for (int i = 0; i < sources.Count; i++)
                         {
-                            SourceModel sm = sources[i];
-                            if (sm == null) continue;
-
-                            bool found = false;
-                            for (int j = 0; j < _loadedSources.Count; j++)
-                            {
-                                if (string.Compare(_loadedSources[j].id, sm.id, true) == 0)
-                                {
-                                    _loadedSources[j] = sm;
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found)
-                            {
-                                _loadedSources.Add(sm);
-                            }
-
-                            LoadAndCacheSourceApps(sm, true);
+                            MergeSourceModel(sources[i], true);
                         }
 
-                        if (this.IsHandleCreated && !this.IsDisposed)
-                        {
-                            this.BeginInvoke(new MethodInvoker(delegate
-                            {
-                                if (_installationRegistry != null && _loadedApps != null)
-                                {
-                                    _installationRegistry.ApplyStatusToApps(_loadedApps);
-                                }
-                                SaveInstalledSourcesToSettings();
-                                PopulateNavigationTree();
-                                PopulateInstalledSourcesList();
-                                DisplayApps(_loadedApps, _showGroupsInApplications);
-                                this.Cursor = Cursors.Default;
-                            }));
-                        }
+                        CommitLoadedSourcesAndRefreshUI();
                     }
                     else
                     {
-                        if (this.IsHandleCreated && !this.IsDisposed)
-                        {
-                            this.BeginInvoke(new MethodInvoker(delegate
-                            {
-                                this.Cursor = Cursors.Default;
-                            }));
-                        }
+                        ResetCursorDefaultSafe();
                     }
                 }
                 catch (Exception ex)
                 {
-                    if (this.IsHandleCreated && !this.IsDisposed)
-                    {
-                        this.BeginInvoke(new MethodInvoker(delegate
-                        {
-                            this.Cursor = Cursors.Default;
-                            Console.WriteLine(Resources.error + ex.Message);
-                        }));
-                    }
+                    ResetCursorDefaultSafe();
+                    Console.WriteLine(Resources.error + ex.Message);
                 }
             });
         }
@@ -514,52 +530,70 @@ namespace Ecureuil
                     if (_loadedSources == null) _loadedSources = new List<SourceModel>();
                     if (_loadedApps == null) _loadedApps = new List<AppModel>();
 
-                    bool found = false;
-                    for (int j = 0; j < _loadedSources.Count; j++)
-                    {
-                        if (string.Compare(_loadedSources[j].id, sm.id, true) == 0 ||
-                            string.Compare(_loadedSources[j].url, sm.url, true) == 0)
-                        {
-                            _loadedSources[j] = sm;
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found)
-                    {
-                        _loadedSources.Add(sm);
-                    }
-
-                    LoadAndCacheSourceApps(sm, true);
-
-                    if (this.IsHandleCreated && !this.IsDisposed)
-                    {
-                        this.BeginInvoke(new MethodInvoker(delegate
-                        {
-                            if (_installationRegistry != null && _loadedApps != null)
-                            {
-                                _installationRegistry.ApplyStatusToApps(_loadedApps);
-                            }
-                            SaveInstalledSourcesToSettings();
-                            PopulateNavigationTree();
-                            PopulateInstalledSourcesList();
-                            DisplayApps(_loadedApps, _showGroupsInApplications);
-                            this.Cursor = Cursors.Default;
-                        }));
-                    }
+                    MergeSourceModel(sm, true);
+                    CommitLoadedSourcesAndRefreshUI();
                 }
                 catch (Exception ex)
                 {
-                    if (this.IsHandleCreated && !this.IsDisposed)
-                    {
-                        this.BeginInvoke(new MethodInvoker(delegate
-                        {
-                            this.Cursor = Cursors.Default;
-                            Console.WriteLine(Resources.error + ex.Message);
-                        }));
-                    }
+                    ResetCursorDefaultSafe();
+                    Console.WriteLine(Resources.error + ex.Message);
                 }
             });
+        }
+
+        private void MergeSourceModel(SourceModel sm, bool loadApps)
+        {
+            if (sm == null) return;
+            bool found = false;
+            for (int j = 0; j < _loadedSources.Count; j++)
+            {
+                if (string.Compare(_loadedSources[j].id, sm.id, true) == 0 ||
+                    (!string.IsNullOrEmpty(sm.url) && string.Compare(_loadedSources[j].url, sm.url, true) == 0))
+                {
+                    _loadedSources[j] = sm;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                _loadedSources.Add(sm);
+            }
+
+            if (loadApps)
+            {
+                LoadAndCacheSourceApps(sm, true);
+            }
+        }
+
+        private void CommitLoadedSourcesAndRefreshUI()
+        {
+            if (this.IsHandleCreated && !this.IsDisposed)
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    if (_installationRegistry != null && _loadedApps != null)
+                    {
+                        _installationRegistry.ApplyStatusToApps(_loadedApps);
+                    }
+                    SaveInstalledSourcesToSettings();
+                    PopulateNavigationTree();
+                    PopulateInstalledSourcesList();
+                    DisplayApps(_loadedApps, _showGroupsInApplications);
+                    this.Cursor = Cursors.Default;
+                }));
+            }
+        }
+
+        private void ResetCursorDefaultSafe()
+        {
+            if (this.IsHandleCreated && !this.IsDisposed)
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    this.Cursor = Cursors.Default;
+                }));
+            }
         }
 
         // add source text; add source when clicking down the Enter key
@@ -873,12 +907,12 @@ namespace Ecureuil
                    string.Compare(sm.originalURL, key, true) == 0;
         }
 
-        // helper to check if an app belongs to an enabled source
+        // helper to check if an app belongs to an enabled and added source
         private bool IsAppEnabled(AppModel app)
         {
             if (app == null) return false;
-            if (string.IsNullOrEmpty(app.source)) return true;
-            if (_loadedSources == null || _loadedSources.Count == 0) return true;
+            if (string.IsNullOrEmpty(app.source)) return false;
+            if (_loadedSources == null || _loadedSources.Count == 0) return false;
 
             for (int s = 0; s < _loadedSources.Count; s++)
             {
@@ -887,7 +921,7 @@ namespace Ecureuil
                     return _loadedSources[s].isEnabled;
                 }
             }
-            return true;
+            return false;
         }
 
         // Populates the left navigation tree with root nodes, dynamic categories, and dynamic sources from index
@@ -976,27 +1010,6 @@ namespace Ecureuil
                         srcNode.Tag = key;
                         sourcesNode.Nodes.Add(srcNode);
                         addedSourceKeys[key] = true;
-                        addedSourceKeys[displayName] = true;
-                    }
-                }
-            }
-
-            if (_loadedApps != null)
-            {
-                for (int a = 0; a < _loadedApps.Count; a++)
-                {
-                    AppModel app = _loadedApps[a];
-                    if (app == null || string.IsNullOrEmpty(app.source)) continue;
-                    string sName = app.source;
-                    if (!addedSourceKeys.ContainsKey(sName))
-                    {
-                        SourceModel sm = FindSourceModel(sName);
-                        string displayName = (sm != null && !string.IsNullOrEmpty(sm.name)) ? sm.name : sName;
-                        TreeNode srcNode = new TreeNode(displayName);
-                        srcNode.Name = Resources.source2 + "_" + sName;
-                        srcNode.Tag = sName;
-                        sourcesNode.Nodes.Add(srcNode);
-                        addedSourceKeys[sName] = true;
                         addedSourceKeys[displayName] = true;
                     }
                 }
@@ -1484,13 +1497,13 @@ namespace Ecureuil
                 {
                     for (int i = 0; i < _loadedApps.Count; i++)
                     {
-                        if (_loadedApps[i] != null && _loadedApps[i].isInstalled && IsAppEnabled(_loadedApps[i]))
+                        if (_loadedApps[i] != null && _loadedApps[i].isInstalled)
                         {
                             installed.Add(_loadedApps[i]);
                         }
                     }
                 }
-                DisplayApps(installed, false);
+                DisplayApps(installed, false, false);
                 return;
             }
 
@@ -2054,26 +2067,6 @@ namespace Ecureuil
                 }
             }
 
-            if (_loadedApps != null)
-            {
-                for (int a = 0; a < _loadedApps.Count; a++)
-                {
-                    AppModel app = _loadedApps[a];
-                    if (app == null || string.IsNullOrEmpty(app.source)) continue;
-                    if (!addedNames.ContainsKey(app.source))
-                    {
-                        SourceModel sm = FindSourceModel(app.source);
-                        string name = (sm != null && !string.IsNullOrEmpty(sm.name)) ? sm.name : app.source;
-                        if (!addedNames.ContainsKey(name))
-                        {
-                            installedSources.Items.Add(name);
-                            addedNames[name] = true;
-                            addedNames[app.source] = true;
-                        }
-                    }
-                }
-            }
-
             installedSources.EndUpdate();
             bool hasSelection = installedSources.SelectedItem != null;
             deleteSource.Enabled = hasSelection;
@@ -2159,10 +2152,6 @@ namespace Ecureuil
             fallback.dateCreated = DateTime.Now;
             fallback.lastUpdated = DateTime.Now;
 
-            if (_loadedSources == null) _loadedSources = new List<SourceModel>();
-            _loadedSources.Add(fallback);
-            SaveInstalledSourcesToSettings();
-
             return fallback;
         }
 
@@ -2194,7 +2183,16 @@ namespace Ecureuil
                 if (allRes == DialogResult.Yes)
                 {
                     if (_loadedSources != null) _loadedSources.Clear();
-                    if (_loadedApps != null) _loadedApps.Clear();
+                    if (_loadedApps != null)
+                    {
+                        for (int a = _loadedApps.Count - 1; a >= 0; a--)
+                        {
+                            if (_loadedApps[a] == null || !_loadedApps[a].isInstalled)
+                            {
+                                _loadedApps.RemoveAt(a);
+                            }
+                        }
+                    }
                     SaveInstalledSourcesToSettings();
                     PopulateNavigationTree();
                     PopulateInstalledSourcesList();
@@ -2228,13 +2226,16 @@ namespace Ecureuil
                 {
                     for (int a = _loadedApps.Count - 1; a >= 0; a--)
                     {
-                        string src = _loadedApps[a] != null ? _loadedApps[a].source : null;
-                        if (!string.IsNullOrEmpty(src) &&
-                            (string.Compare(src, sourceToDelete, true) == 0 ||
-                             string.Compare(src, delId, true) == 0 ||
-                             string.Compare(src, delName, true) == 0))
+                        if (_loadedApps[a] != null && !_loadedApps[a].isInstalled)
                         {
-                            _loadedApps.RemoveAt(a);
+                            string src = _loadedApps[a].source;
+                            if (!string.IsNullOrEmpty(src) &&
+                                (string.Compare(src, sourceToDelete, true) == 0 ||
+                                 string.Compare(src, delId, true) == 0 ||
+                                 string.Compare(src, delName, true) == 0))
+                            {
+                                _loadedApps.RemoveAt(a);
+                            }
                         }
                     }
                 }
@@ -2549,6 +2550,12 @@ namespace Ecureuil
                     }
                 }
             });
+        }
+
+        private void initialSetupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            initialSetup initialSetup = new initialSetup();
+            initialSetup.Show();
         }
     }
 }

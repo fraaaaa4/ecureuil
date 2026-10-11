@@ -101,6 +101,7 @@ namespace Ecureuil
             this.toolStripSeparatorOrder = new System.Windows.Forms.ToolStripSeparator();
             this.cmbOrderBy = new System.Windows.Forms.ToolStripComboBox();
             this.lblOrderBy = new System.Windows.Forms.ToolStripLabel();
+            this.initialSetupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -255,7 +256,7 @@ namespace Ecureuil
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
@@ -264,6 +265,7 @@ namespace Ecureuil
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.helpToolStripMenuItem1,
             this.toolStripSeparator1,
+            this.initialSetupToolStripMenuItem,
             this.aboutEcureuilToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
@@ -816,6 +818,13 @@ namespace Ecureuil
             this.lblOrderBy.Size = new System.Drawing.Size(70, 22);
             this.lblOrderBy.Text = "Order by:";
             // 
+            // initialSetupToolStripMenuItem
+            // 
+            this.initialSetupToolStripMenuItem.Name = "initialSetupToolStripMenuItem";
+            this.initialSetupToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.initialSetupToolStripMenuItem.Text = "Initial setup";
+            this.initialSetupToolStripMenuItem.Click += new System.EventHandler(this.initialSetupToolStripMenuItem_Click);
+            // 
             // mainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -930,6 +939,7 @@ namespace Ecureuil
         private System.Windows.Forms.Label addYourOwnLabel;
         private System.Windows.Forms.LinkLabel addYourOwnLink;
         private System.Windows.Forms.ImageList _appImageList;
+        private System.Windows.Forms.ToolStripMenuItem initialSetupToolStripMenuItem;
     }
 }
 

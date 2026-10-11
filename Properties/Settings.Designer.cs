@@ -154,5 +154,17 @@ namespace Ecureuil.Properties {
                 this["StartMenuLink"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("24")]
+        public int maxAge {
+            get {
+                return ((int)(this["maxAge"]));
+            }
+            set {
+                this["maxAge"] = value;
+            }
+        }
     }
 }

@@ -92,10 +92,9 @@ namespace Ecureuil.Core.Models {
       _screenshots = new List<string>();
       _language = new List<string>();
     }
-    }
   }
 
-    public static class sizeFormat {
+  public static class sizeFormat {
         public static string FormattedSize (long _size)
         {
                 if (_size < 1024)
@@ -107,5 +106,67 @@ namespace Ecureuil.Core.Models {
                     return (_size / 1024.0).ToString("F1") + " KB";
                 }
                 return (_size / (1024.0 * 1024.0)).ToString("F1") + " MB";
+        }
+    }
+
+    public enum DependencyAction {
+        Install,
+        Copy,
+        CopySystem
+    }
+
+    public class DependencySpec {
+        private DependencyAction _action = DependencyAction.Install;
+        private string _target = "";
+        private bool _isEcureuil = false;
+        private string _sourceId = null;
+        private string _appId = null;
+        private string _httpUrl = null;
+
+        public DependencyAction Action { get { return _action; } set { _action = value; } }
+        public string Target { get { return _target; } set { _target = value; } }
+        public bool IsEcureuil { get { return _isEcureuil; } set { _isEcureuil = value; } }
+        public string SourceId { get { return _sourceId; } set { _sourceId = value; } }
+        public string AppId { get { return _appId; } set { _appId = value; } }
+        public string HttpUrl { get { return _httpUrl; } set { _httpUrl = value; } }
+        public bool IsActionable { get { return _isEcureuil || !string.IsNullOrEmpty(_httpUrl); } }
+
+        public static DependencySpec Parse(string rawDep) {
+            if (string.IsNullOrEmpty(rawDep)) return null;
+            DependencySpec spec = new DependencySpec();
+            string trimmed = rawDep.Trim();
+
+            if (trimmed.StartsWith("copysystem#", StringComparison.OrdinalIgnoreCase)) {
+                spec.Action = DependencyAction.CopySystem;
+                trimmed = trimmed.Substring(11).Trim();
+            } else if (trimmed.StartsWith("copy#", StringComparison.OrdinalIgnoreCase)) {
+                spec.Action = DependencyAction.Copy;
+                trimmed = trimmed.Substring(5).Trim();
+            } else if (trimmed.StartsWith("install#", StringComparison.OrdinalIgnoreCase)) {
+                spec.Action = DependencyAction.Install;
+                trimmed = trimmed.Substring(8).Trim();
+            }
+
+            spec.Target = trimmed;
+
+            if (trimmed.StartsWith("#EC?", StringComparison.OrdinalIgnoreCase) || trimmed.StartsWith("EC?", StringComparison.OrdinalIgnoreCase)) {
+                spec.IsEcureuil = true;
+                string ecStr = trimmed.StartsWith("#", StringComparison.OrdinalIgnoreCase) ? trimmed.Substring(4).Trim() : trimmed.Substring(3).Trim();
+                int hashIndex = ecStr.IndexOf('#');
+                if (hashIndex >= 0) {
+                    spec.SourceId = ecStr.Substring(0, hashIndex).Trim();
+                    spec.AppId = ecStr.Substring(hashIndex + 1).Trim();
+                } else {
+                    spec.AppId = ecStr;
+                }
+            } else if (trimmed.StartsWith("#EC#", StringComparison.OrdinalIgnoreCase) || trimmed.StartsWith("EC#", StringComparison.OrdinalIgnoreCase)) {
+                spec.IsEcureuil = true;
+                spec.AppId = trimmed.StartsWith("#", StringComparison.OrdinalIgnoreCase) ? trimmed.Substring(4).Trim() : trimmed.Substring(3).Trim();
+            } else if (trimmed.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || trimmed.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) {
+                spec.HttpUrl = trimmed;
+            }
+
+            return spec;
+        }
     }
 }

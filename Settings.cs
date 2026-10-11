@@ -43,6 +43,8 @@ namespace Ecureuil
 
             sourcesCacheListView.ItemChecked += new ItemCheckedEventHandler(cacheListView_ItemChecked);
             appsCacheListView.ItemChecked += new ItemCheckedEventHandler(cacheListView_ItemChecked);
+
+            numericCaheValid.Value = Settings.Default.maxAge;
         }
 
         private void TextResource()
@@ -51,6 +53,12 @@ namespace Ecureuil
             OKButton.Text = Resources.ok;
             ApplyButton.Text = Resources.apply;
             CancelButton.Text = Resources.cancel;
+            colSourceHeaderName.Text = Resources.name ?? "Name";
+            colSourceHeaderUpdated.Text = Resources.lastUpdated ?? "Last updated";
+            colSourceHeaderSize.Text = Resources.size ?? "Size";
+            colAppHeaderName.Text = Resources.name ?? "Name";
+            colAppHeaderUpdated.Text = Resources.lastUpdated ?? "Last updated";
+            colAppHeaderSize.Text = Resources.size ?? "Size";
         }
 
         private void CancelButton_Click(object sender, EventArgs e)
@@ -144,6 +152,7 @@ namespace Ecureuil
                     FileInfo usf = new FileInfo(userSourcesPath);
                     ListViewItem usItem = new ListViewItem(Resources.userSourcesIndex);
                     usItem.SubItems.Add(usf.LastWriteTime.ToString("dd/MM/yyyy HH:mm"));
+                    usItem.SubItems.Add(sizeFormat.FormattedSize(usf.Length));
                     usItem.ToolTipText = usf.FullName;
                     usItem.Tag = usf;
                     sourcesCacheListView.Items.Add(usItem);
@@ -163,6 +172,7 @@ namespace Ecureuil
 
                         ListViewItem item = new ListViewItem(displayName);
                         item.SubItems.Add(file.LastWriteTime.ToString("dd/MM/yyyy HH:mm"));
+                        item.SubItems.Add(sizeFormat.FormattedSize(file.Length));
                         item.ToolTipText = file.FullName;
                         item.Tag = file;
                         sourcesCacheListView.Items.Add(item);
@@ -176,6 +186,7 @@ namespace Ecureuil
 
                         ListViewItem item = new ListViewItem(displayName);
                         item.SubItems.Add(file.LastWriteTime.ToString("dd/MM/yyyy HH:mm"));
+                        item.SubItems.Add(sizeFormat.FormattedSize(file.Length));
                         item.ToolTipText = file.FullName;
                         item.Tag = file;
                         appsCacheListView.Items.Add(item);
@@ -186,6 +197,7 @@ namespace Ecureuil
                         string displayName = name.Replace(".json", "");
                         ListViewItem item = new ListViewItem(displayName);
                         item.SubItems.Add(file.LastWriteTime.ToString("dd/MM/yyyy HH:mm"));
+                        item.SubItems.Add(sizeFormat.FormattedSize(file.Length));
                         item.ToolTipText = file.FullName;
                         item.Tag = file;
                         sourcesCacheListView.Items.Add(item);
@@ -832,5 +844,28 @@ namespace Ecureuil
         }
 
         #endregion
+
+        private void selectAllButton_Click(object sender, EventArgs e)
+        {
+            if (cacheInnerTabControl.SelectedIndex == 0)
+            {
+                for (int i = 0; i < sourcesCacheListView.Items.Count; i++)
+                {
+                    sourcesCacheListView.Items[i].Checked = true;
+                }
+            }
+            else if (cacheInnerTabControl.SelectedIndex == 1)
+            {
+                for (int i = 0; i < appsCacheListView.Items.Count; i++)
+                {
+                    appsCacheListView.Items[i].Checked = true;
+                }
+            }
+        }
+
+        private void numericCaheValid_ValueChanged(object sender, EventArgs e)
+        {
+            Settings.Default.maxAge = (int)numericCaheValid.Value; Settings.Default.Save();
+        }
     }
 }

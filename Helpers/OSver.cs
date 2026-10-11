@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Microsoft.Win32;
 
 namespace Ecureuil.Core.Helpers {
   public static class OSver {
@@ -61,8 +62,44 @@ namespace Ecureuil.Core.Helpers {
       }
     }
 
+    static string productName; static string currentVersion; static string buildLab;
+
     public static string GetCurrentOSVersion() {
-      OperatingSystem os = Environment.OSVersion;
+        using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion"))
+        {
+            if (key != null)
+            {
+                productName = key.GetValue("ProductName") as string; //windows product name
+                currentVersion = key.GetValue("CurrentVersion") as string; //current version
+                buildLab = key.GetValue("BuildLab") as string; //build number
+            }
+            else
+            {
+                return "No.";
+            }
+        }
+
+        switch (currentVersion)
+        {
+            case "4.0": return "95";
+            case "4.10": return "98";
+            case "4.90": return "ME";
+            case "10":
+                if (Environment.OSVersion.Version.Build >= 21996) return "11";
+                else return "10";
+            case "6.4": return "8.2";
+            case "6.3": return "8.1";
+            case "6.2": return "8.0";
+            case "6.1": return "7";
+            case "6.0": return "Vista";
+            case "5.2": return "XP/2003";
+            case "5.1": return "XP";
+            case "5.0": return "2000";
+            case "4": return "NT 4";
+            case "3": return "NT 3.51";
+            default: return "Windows";
+        }
+      /*OperatingSystem os = Environment.OSVersion;
       Version version = os.Version;
 
       if (os.Platform == PlatformID.Win32Windows) {
@@ -110,11 +147,12 @@ namespace Ecureuil.Core.Helpers {
           if (version.Minor == 51) return "NT 3.51";
           break;
       }
+       */
 
-      return "Windows";
+      //return "Windows";
     }
 
-    // Verifica compatibilita della lista OS con la versione corrente
+    // Verify compatibility with current OS
     public static bool IsAppCompatible(List<string> appCompatibilityList) {
       if (appCompatibilityList == null || appCompatibilityList.Count == 0) {
         return true;
