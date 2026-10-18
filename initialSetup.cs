@@ -37,11 +37,8 @@ namespace Ecureuil
 
         private void pageChange(int page)
         {
-            /*  Page 0: Welcome to Ecureuil
-             *  Page 1: Add sources
-             */
-
             currentPage = page;
+            backButton.Enabled = (currentPage > 0);
 
             switch (page)
             {
@@ -68,26 +65,34 @@ namespace Ecureuil
                     welcomeLabel2.Text = Resources.welcome1Page4;
                     EcureuilText1.Text = Resources.welcome2Page4;
                     break;
-
+                case 4:
+                    welcomeLabel1.Text = Resources.welcomePage5;
+                    welcomeLabel2.Text = Resources.welcome1Page5;
+                    EcureuilText1.Text = Resources.welcome2Page5;
+                    break;
             }
         }
 
         private void nextButton_Click(object sender, EventArgs e)
         {
-            backButton.Enabled = true;
-            currentPage++;
-            pageChange(currentPage);
+            pageChange(currentPage + 1);
+            if (currentPage == 4)
+            {
+                nextButton.Text = "Finish";
+            } else if (currentPage == 5){
+                this.Close();
+            } else {
+                nextButton.Text = "Next >";
+            }
         }
 
         private void backButton_Click(object sender, EventArgs e)
         {
-            backButton.Enabled = true;
-            currentPage--;
-            pageChange(currentPage);
-            if (currentPage == 0)
+            if (currentPage > 0)
             {
-                backButton.Enabled = false;
-                return;
+                if (currentPage == 4)
+                    nextButton.Text = "Next >";
+                pageChange(currentPage - 1); 
             }
         }
     }

@@ -42,6 +42,7 @@ namespace Ecureuil.Core.Models {
     private DateTime? _installedOn;
     private string _installedShortcutPath;
     private string _installDirectory;
+    private DateTime? _installedDate;
 
     public string id { get { return _id; } set { _id = value; } }
     public string name { get { return _name; } set { _name = value; } }
@@ -78,6 +79,7 @@ namespace Ecureuil.Core.Models {
     // Locale
     public bool isInstalled { get { return _isInstalled; } set { _isInstalled = value; } }
     public DateTime? installedOn { get { return _installedOn; } set { _installedOn = value; } }
+    public DateTime? installedDate { get { return _installedDate; } set { _installedDate = value; } }
     public string installedShortcutPath { get { return _installedShortcutPath; } set { _installedShortcutPath = value; } }
     public string installDirectory { get { return _installDirectory; } set { _installDirectory = value; } }
 

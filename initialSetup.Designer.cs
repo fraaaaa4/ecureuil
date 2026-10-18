@@ -32,8 +32,8 @@ namespace Ecureuil
             this.welcomeLabel1 = new System.Windows.Forms.Label();
             this.welcomeLabel2 = new System.Windows.Forms.Label();
             this.controlGroupBox = new System.Windows.Forms.GroupBox();
-            this.nextButton = new System.Windows.Forms.Button();
             this.backButton = new System.Windows.Forms.Button();
+            this.nextButton = new System.Windows.Forms.Button();
             this.EcureuilText1 = new System.Windows.Forms.Label();
             this.modernWindowsNotice = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -70,16 +70,6 @@ namespace Ecureuil
             this.controlGroupBox.TabIndex = 2;
             this.controlGroupBox.TabStop = false;
             // 
-            // nextButton
-            // 
-            this.nextButton.Location = new System.Drawing.Point(282, 14);
-            this.nextButton.Name = "nextButton";
-            this.nextButton.Size = new System.Drawing.Size(75, 23);
-            this.nextButton.TabIndex = 0;
-            this.nextButton.Text = "Next >";
-            this.nextButton.UseVisualStyleBackColor = true;
-            this.nextButton.Click += new System.EventHandler(this.nextButton_Click);
-            // 
             // backButton
             // 
             this.backButton.Enabled = false;
@@ -91,11 +81,21 @@ namespace Ecureuil
             this.backButton.UseVisualStyleBackColor = true;
             this.backButton.Click += new System.EventHandler(this.backButton_Click);
             // 
+            // nextButton
+            // 
+            this.nextButton.Location = new System.Drawing.Point(282, 14);
+            this.nextButton.Name = "nextButton";
+            this.nextButton.Size = new System.Drawing.Size(75, 23);
+            this.nextButton.TabIndex = 0;
+            this.nextButton.Text = "Next >";
+            this.nextButton.UseVisualStyleBackColor = true;
+            this.nextButton.Click += new System.EventHandler(this.nextButton_Click);
+            // 
             // EcureuilText1
             // 
             this.EcureuilText1.Location = new System.Drawing.Point(17, 56);
             this.EcureuilText1.Name = "EcureuilText1";
-            this.EcureuilText1.Size = new System.Drawing.Size(331, 127);
+            this.EcureuilText1.Size = new System.Drawing.Size(331, 146);
             this.EcureuilText1.TabIndex = 3;
             this.EcureuilText1.Text = resources.GetString("EcureuilText1.Text");
             // 

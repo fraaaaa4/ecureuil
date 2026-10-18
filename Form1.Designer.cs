@@ -50,6 +50,7 @@ namespace Ecureuil
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.initialSetupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutEcureuilToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.categoryNavigationView = new System.Windows.Forms.TreeView();
@@ -73,6 +74,7 @@ namespace Ecureuil
             this._appImageList = new System.Windows.Forms.ImageList(this.components);
             this.discoverSources = new System.Windows.Forms.Panel();
             this.discoverSourcesText1 = new System.Windows.Forms.Label();
+            this.txtUpdatesStatus = new System.Windows.Forms.TextBox();
             this.sourcePanel = new System.Windows.Forms.Panel();
             this.sourceDescription = new System.Windows.Forms.Label();
             this.sourceCreation = new System.Windows.Forms.Label();
@@ -101,7 +103,7 @@ namespace Ecureuil
             this.toolStripSeparatorOrder = new System.Windows.Forms.ToolStripSeparator();
             this.cmbOrderBy = new System.Windows.Forms.ToolStripComboBox();
             this.lblOrderBy = new System.Windows.Forms.ToolStripLabel();
-            this.initialSetupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateAllButton = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -256,7 +258,7 @@ namespace Ecureuil
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
@@ -282,6 +284,13 @@ namespace Ecureuil
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(151, 6);
             // 
+            // initialSetupToolStripMenuItem
+            // 
+            this.initialSetupToolStripMenuItem.Name = "initialSetupToolStripMenuItem";
+            this.initialSetupToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.initialSetupToolStripMenuItem.Text = "Initial setup";
+            this.initialSetupToolStripMenuItem.Click += new System.EventHandler(this.initialSetupToolStripMenuItem_Click);
+            // 
             // aboutEcureuilToolStripMenuItem
             // 
             this.aboutEcureuilToolStripMenuItem.Name = "aboutEcureuilToolStripMenuItem";
@@ -303,6 +312,7 @@ namespace Ecureuil
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.sourcesPanel);
+            this.splitContainer1.Panel2.Controls.Add(this.txtUpdatesStatus);
             this.splitContainer1.Panel2.Controls.Add(this.categoryItemView);
             this.splitContainer1.Panel2.Controls.Add(this.discoverSources);
             this.splitContainer1.Panel2.Controls.Add(this.sourcePanel);
@@ -518,6 +528,7 @@ namespace Ecureuil
             // discoverSources
             // 
             this.discoverSources.BackColor = System.Drawing.SystemColors.Highlight;
+            this.discoverSources.Controls.Add(this.updateAllButton);
             this.discoverSources.Controls.Add(this.discoverSourcesText1);
             this.discoverSources.Dock = System.Windows.Forms.DockStyle.Top;
             this.discoverSources.Location = new System.Drawing.Point(0, 54);
@@ -535,6 +546,35 @@ namespace Ecureuil
             this.discoverSourcesText1.Size = new System.Drawing.Size(90, 13);
             this.discoverSourcesText1.TabIndex = 0;
             this.discoverSourcesText1.Text = "Navigation bar";
+            // 
+            // updateAllButton
+            // 
+            this.updateAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.updateAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.updateAllButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.updateAllButton.Location = new System.Drawing.Point(495, 1);
+            this.updateAllButton.Name = "updateAllButton";
+            this.updateAllButton.Size = new System.Drawing.Size(82, 20);
+            this.updateAllButton.TabIndex = 1;
+            this.updateAllButton.Text = "Update all";
+            this.updateAllButton.UseVisualStyleBackColor = true;
+            this.updateAllButton.Visible = false;
+            this.updateAllButton.Click += new System.EventHandler(this.updateAllButton_Click);
+            // 
+            // txtUpdatesStatus
+            // 
+            this.txtUpdatesStatus.BackColor = System.Drawing.SystemColors.Window;
+            this.txtUpdatesStatus.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtUpdatesStatus.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtUpdatesStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtUpdatesStatus.Location = new System.Drawing.Point(0, 76);
+            this.txtUpdatesStatus.Multiline = true;
+            this.txtUpdatesStatus.Name = "txtUpdatesStatus";
+            this.txtUpdatesStatus.ReadOnly = true;
+            this.txtUpdatesStatus.Size = new System.Drawing.Size(582, 346);
+            this.txtUpdatesStatus.TabIndex = 21;
+            this.txtUpdatesStatus.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txtUpdatesStatus.Visible = false;
             // 
             // sourcePanel
             // 
@@ -818,12 +858,15 @@ namespace Ecureuil
             this.lblOrderBy.Size = new System.Drawing.Size(70, 22);
             this.lblOrderBy.Text = "Order by:";
             // 
-            // initialSetupToolStripMenuItem
+            // updateAllButton
             // 
-            this.initialSetupToolStripMenuItem.Name = "initialSetupToolStripMenuItem";
-            this.initialSetupToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.initialSetupToolStripMenuItem.Text = "Initial setup";
-            this.initialSetupToolStripMenuItem.Click += new System.EventHandler(this.initialSetupToolStripMenuItem_Click);
+            this.updateAllButton.BackColor = System.Drawing.SystemColors.Control;
+            this.updateAllButton.Location = new System.Drawing.Point(509, 0);
+            this.updateAllButton.Name = "updateAllButton";
+            this.updateAllButton.Size = new System.Drawing.Size(72, 22);
+            this.updateAllButton.TabIndex = 1;
+            this.updateAllButton.Text = "Update all";
+            this.updateAllButton.UseVisualStyleBackColor = false;
             // 
             // mainWindow
             // 
@@ -940,6 +983,8 @@ namespace Ecureuil
         private System.Windows.Forms.LinkLabel addYourOwnLink;
         private System.Windows.Forms.ImageList _appImageList;
         private System.Windows.Forms.ToolStripMenuItem initialSetupToolStripMenuItem;
+        private System.Windows.Forms.Button updateAllButton;
+        private System.Windows.Forms.TextBox txtUpdatesStatus;
     }
 }
 

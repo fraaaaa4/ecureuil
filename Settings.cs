@@ -37,9 +37,8 @@ namespace Ecureuil
             CacheCheckboxLoadCheck();
             LoadInstallationSettings();
             LoadFileTabSettings();
-            if (!changedStuff) ApplyButton.Enabled = false; else ApplyButton.Enabled = true;
-            if (Ecureuil.Properties.Settings.Default.enableCache) enableCacheCheckbox.Checked = true;
-            else enableCacheCheckbox.Checked = false;
+            ApplyButton.Enabled = changedStuff;
+            enableCacheCheckbox.Checked = Settings.Default.enableCache;
 
             sourcesCacheListView.ItemChecked += new ItemCheckedEventHandler(cacheListView_ItemChecked);
             appsCacheListView.ItemChecked += new ItemCheckedEventHandler(cacheListView_ItemChecked);
@@ -276,33 +275,24 @@ namespace Ecureuil
             return total;
         }
 
+        private void AddCheckedFiles(ListView list, List<FileInfo> target)
+        {
+            if (list == null || list.Items == null) return;
+            for (int i = 0; i < list.Items.Count; i++)
+            {
+                if (list.Items[i].Checked)
+                {
+                    FileInfo fi = list.Items[i].Tag as FileInfo;
+                    if (fi != null && fi.Exists) target.Add(fi);
+                }
+            }
+        }
+
         private void deleteCacheButton_Click(object sender, EventArgs e)
         {
             List<FileInfo> filesToDelete = new List<FileInfo>();
-
-            if (sourcesCacheListView != null && sourcesCacheListView.Items != null)
-            {
-                for (int i = 0; i < sourcesCacheListView.Items.Count; i++)
-                {
-                    if (sourcesCacheListView.Items[i].Checked)
-                    {
-                        FileInfo fi = sourcesCacheListView.Items[i].Tag as FileInfo;
-                        if (fi != null && fi.Exists) filesToDelete.Add(fi);
-                    }
-                }
-            }
-
-            if (appsCacheListView != null && appsCacheListView.Items != null)
-            {
-                for (int i = 0; i < appsCacheListView.Items.Count; i++)
-                {
-                    if (appsCacheListView.Items[i].Checked)
-                    {
-                        FileInfo fi = appsCacheListView.Items[i].Tag as FileInfo;
-                        if (fi != null && fi.Exists) filesToDelete.Add(fi);
-                    }
-                }
-            }
+            AddCheckedFiles(sourcesCacheListView, filesToDelete);
+            AddCheckedFiles(appsCacheListView, filesToDelete);
 
             if (filesToDelete.Count == 0)
             {
@@ -524,27 +514,26 @@ namespace Ecureuil
             ApplyButton.Enabled = true;
         }
 
+        private void SetCacheControlsEnabled(bool enabled)
+        {
+            sourcesCacheListView.Enabled = enabled;
+            appsCacheListView.Enabled = enabled;
+            refreshCacheButton.Enabled = enabled;
+            deleteCacheButton.Enabled = enabled;
+        }
+
         private void CacheCheckboxCheck()
         {
-            Ecureuil.Properties.Settings.Default.enableCache = enableCacheCheckbox.Checked;
-            Ecureuil.Properties.Settings.Default.Save();
-
-            sourcesCacheListView.Enabled = enableCacheCheckbox.Checked;
-            appsCacheListView.Enabled = enableCacheCheckbox.Checked;
-            refreshCacheButton.Enabled = enableCacheCheckbox.Checked;
-            deleteCacheButton.Enabled = enableCacheCheckbox.Checked;
-
+            Settings.Default.enableCache = enableCacheCheckbox.Checked;
+            Settings.Default.Save();
+            SetCacheControlsEnabled(enableCacheCheckbox.Checked);
             settingsSaved = false;
         }
 
         private void CacheCheckboxLoadCheck()
         {
-            enableCacheCheckbox.Checked = Ecureuil.Properties.Settings.Default.enableCache;
-
-            sourcesCacheListView.Enabled = enableCacheCheckbox.Checked;
-            appsCacheListView.Enabled = enableCacheCheckbox.Checked;
-            refreshCacheButton.Enabled = enableCacheCheckbox.Checked;
-            deleteCacheButton.Enabled = enableCacheCheckbox.Checked;
+            enableCacheCheckbox.Checked = Settings.Default.enableCache;
+            SetCacheControlsEnabled(enableCacheCheckbox.Checked);
         }
 
         private bool isLoadingSettings = false;
@@ -847,18 +836,12 @@ namespace Ecureuil
 
         private void selectAllButton_Click(object sender, EventArgs e)
         {
-            if (cacheInnerTabControl.SelectedIndex == 0)
+            ListView targetList = cacheInnerTabControl.SelectedIndex == 0 ? sourcesCacheListView : appsCacheListView;
+            if (targetList != null && targetList.Items != null)
             {
-                for (int i = 0; i < sourcesCacheListView.Items.Count; i++)
+                for (int i = 0; i < targetList.Items.Count; i++)
                 {
-                    sourcesCacheListView.Items[i].Checked = true;
-                }
-            }
-            else if (cacheInnerTabControl.SelectedIndex == 1)
-            {
-                for (int i = 0; i < appsCacheListView.Items.Count; i++)
-                {
-                    appsCacheListView.Items[i].Checked = true;
+                    targetList.Items[i].Checked = true;
                 }
             }
         }

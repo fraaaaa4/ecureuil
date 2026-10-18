@@ -119,14 +119,33 @@ namespace Ecureuil
             return FindSourceModel(_item.source, false) != null;
         }
 
+        private bool IsUpdateAvailable()
+        {
+            if (_item == null || string.IsNullOrEmpty(_item.id) || _installationRegistry == null) return false;
+            InstallationRecord rec = _installationRegistry.GetRecord(_item.id);
+            if (rec == null) return false;
+
+            DateTime? updateDate = _item.dateSource.HasValue ? _item.dateSource : _item.dateOriginal;
+            DateTime? installedDate = rec.InstalledDate.HasValue ? rec.InstalledDate : rec.InstalledOn;
+
+            if (updateDate.HasValue && installedDate.HasValue)
+            {
+                return updateDate.Value > installedDate.Value;
+            }
+
+            return !rec.InstalledDate.HasValue && !string.IsNullOrEmpty(rec.InstalledVersion) && !string.IsNullOrEmpty(_item.version) &&
+                   string.Compare(rec.InstalledVersion.Trim(), _item.version.Trim(), true) != 0;
+        }
+
         private void UpdateToolbarState()
         {
             bool installed = (_item != null && _item.isInstalled);
+            bool hasUpdate = installed && IsUpdateAvailable();
             bool isPortableOrZip = (_item != null && string.Compare((_item.fileType ?? "").TrimStart('.'), "msi", StringComparison.OrdinalIgnoreCase) != 0 && (_item.isPortable || string.Compare((_item.fileType ?? "").TrimStart('.'), "zip", StringComparison.OrdinalIgnoreCase) == 0));
             bool sourceAdded = IsSourceAdded();
             bool isCompatible = (_item == null) || (OSver.IsAppCompatible(_item.compatibility) && OSver.IsArchCompatible(_item.architecture));
 
-            installToolbarButton.Enabled = !installed && sourceAdded && isCompatible;
+            installToolbarButton.Enabled = (!installed || hasUpdate) && sourceAdded && isCompatible;
             openAppToolbarButton.Enabled = installed && isPortableOrZip && (!string.IsNullOrEmpty(_item.installedShortcutPath) || !string.IsNullOrEmpty(_item.installDirectory));
             uninstallToolbarButton.Enabled = installed;
         }
@@ -511,21 +530,15 @@ namespace Ecureuil
             }
 
             appInstructionParameterList.Items.Clear();
-            if (item.installParameters != null)
+            if (item.installParameters != null && item.installParameters.Count > 0)
             {
-                for (int i = 0; i < item.installParameters.Count; i++)
-                {
-                    appInstructionParameterList.Items.Add(item.installParameters[i]);
-                }
+                appInstructionParameterList.Items.AddRange(item.installParameters.ToArray());
             }
 
             listBox1.Items.Clear();
-            if (item.uninstallParameters != null)
+            if (item.uninstallParameters != null && item.uninstallParameters.Count > 0)
             {
-                for (int i = 0; i < item.uninstallParameters.Count; i++)
-                {
-                    listBox1.Items.Add(item.uninstallParameters[i]);
-                }
+                listBox1.Items.AddRange(item.uninstallParameters.ToArray());
             }
 
             // 8. Source Tab (Populating appSameCategoryList ListView)
@@ -575,10 +588,6 @@ namespace Ecureuil
             }
         }
 
-        private void EventClickLink(object sender, EventArgs e)
-        {
-
-        }
 
         private void appScreenshots_DoubleClick(object sender, EventArgs e)
         {
@@ -626,6 +635,11 @@ namespace Ecureuil
             }
         }
 
+        private static bool MatchSource(SourceModel sm, string key)
+        {
+            return sm != null && (string.Compare(sm.id, key, true) == 0 || string.Compare(sm.name, key, true) == 0);
+        }
+
         private SourceModel FindSourceModel(string sourceNameOrId)
         {
             return FindSourceModel(sourceNameOrId, true);
@@ -639,12 +653,7 @@ namespace Ecureuil
             {
                 for (int i = 0; i < _loadedSources.Count; i++)
                 {
-                    SourceModel sm = _loadedSources[i];
-                    if (sm != null && (string.Compare(sm.id, sourceNameOrId, true) == 0 ||
-                                       string.Compare(sm.name, sourceNameOrId, true) == 0))
-                    {
-                        return sm;
-                    }
+                    if (MatchSource(_loadedSources[i], sourceNameOrId)) return _loadedSources[i];
                 }
             }
 
@@ -656,17 +665,9 @@ namespace Ecureuil
                     if (!string.IsNullOrEmpty(userSourcesJson))
                     {
                         List<SourceModel> parsed = new CatalogManager().ParseSourcesJson(userSourcesJson);
-                        if (parsed != null)
+                        for (int i = 0; i < parsed.Count; i++)
                         {
-                            for (int i = 0; i < parsed.Count; i++)
-                            {
-                                SourceModel sm = parsed[i];
-                                if (sm != null && (string.Compare(sm.id, sourceNameOrId, true) == 0 ||
-                                                   string.Compare(sm.name, sourceNameOrId, true) == 0))
-                                {
-                                    return sm;
-                                }
-                            }
+                            if (MatchSource(parsed[i], sourceNameOrId)) return parsed[i];
                         }
                     }
                 }

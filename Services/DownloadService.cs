@@ -72,15 +72,10 @@ namespace Ecureuil.Core.Services {
       }
 
       Uri uri = new Uri(url);
-      if (uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase)) {
-        if (OpenSslNative.IsAvailable) {
-          return DownloadOverOpenSsl(uri, outputStream, progress, redirectCount);
-        } else {
-          return DownloadStreamFallback(url, outputStream, progress, redirectCount);
-        }
-      } else {
-        return DownloadStreamFallback(url, outputStream, progress, redirectCount);
+      if (uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase) && OpenSslNative.IsAvailable) {
+        return DownloadOverOpenSsl(uri, outputStream, progress, redirectCount);
       }
+      return DownloadStreamFallback(url, outputStream, progress, redirectCount);
     }
 
     private bool DownloadOverOpenSsl(Uri uri, Stream outputStream, DownloadProgressChangedHandler progress, int redirectCount) {
@@ -356,17 +351,6 @@ namespace Ecureuil.Core.Services {
       } finally {
         if (responseStream != null) responseStream.Close();
         if (response != null) response.Close();
-      }
-    }
-
-    private bool DownloadFileFallback(string url, string destinationPath, DownloadProgressChangedHandler progress) {
-      string dir = Path.GetDirectoryName(destinationPath);
-      if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) {
-        Directory.CreateDirectory(dir);
-      }
-
-      using (FileStream fs = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None)) {
-        return DownloadStreamFallback(url, fs, progress, 0);
       }
     }
   }

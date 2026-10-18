@@ -70,6 +70,33 @@ namespace Ecureuil.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy.
+        /// </summary>
+        internal static string actionCopy {
+            get {
+                return ResourceManager.GetString("actionCopy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy to System.
+        /// </summary>
+        internal static string actionCopySystem {
+            get {
+                return ResourceManager.GetString("actionCopySystem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install.
+        /// </summary>
+        internal static string actionInstall {
+            get {
+                return ResourceManager.GetString("actionInstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add.
         /// </summary>
         internal static string add {
@@ -516,6 +543,15 @@ namespace Ecureuil.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Checking for updates....
+        /// </summary>
+        internal static string checkingForUpdates {
+            get {
+                return ResourceManager.GetString("checkingForUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Compatibility.
         /// </summary>
         internal static string compatibility {
@@ -663,6 +699,24 @@ namespace Ecureuil.Properties {
         internal static string deleteSourceConfirm {
             get {
                 return ResourceManager.GetString("deleteSourceConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copying dependency: {0}....
+        /// </summary>
+        internal static string depCopying {
+            get {
+                return ResourceManager.GetString("depCopying", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copying dependency: {0} to Windows....
+        /// </summary>
+        internal static string depCopyingSystem {
+            get {
+                return ResourceManager.GetString("depCopyingSystem", resourceCulture);
             }
         }
         
@@ -1309,6 +1363,15 @@ namespace Ecureuil.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to No updates available..
+        /// </summary>
+        internal static string noUpdatesAvailable {
+            get {
+                return ResourceManager.GetString("noUpdatesAvailable", resourceCulture);
+            }
+        }
+        
         internal static System.Drawing.Bitmap oepn {
             get {
                 object obj = ResourceManager.GetObject("oepn", resourceCulture);
@@ -1727,6 +1790,24 @@ namespace Ecureuil.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Source Not Added.
+        /// </summary>
+        internal static string sourceNotAddedTitle {
+            get {
+                return ResourceManager.GetString("sourceNotAddedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot install or download this application because its source has not been added to your sources list. Please add the source first..
+        /// </summary>
+        internal static string sourceNotAddedWarning {
+            get {
+                return ResourceManager.GetString("sourceNotAddedWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Source refreshed successfully..
         /// </summary>
         internal static string sourceRefreshed {
@@ -1824,6 +1905,33 @@ namespace Ecureuil.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to uninstall {0}?.
+        /// </summary>
+        internal static string uninstallConfirm {
+            get {
+                return ResourceManager.GetString("uninstallConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Since this is installed, remember to uninstall it from Control Panel..
+        /// </summary>
+        internal static string uninstallControlPanelNotice {
+            get {
+                return ResourceManager.GetString("uninstallControlPanelNotice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to uninstall {0}.
+        /// </summary>
+        internal static string uninstallFail {
+            get {
+                return ResourceManager.GetString("uninstallFail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to uninstall.
         /// </summary>
         internal static string uninstallFailure {
@@ -1851,7 +1959,7 @@ namespace Ecureuil.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to uninstalled successfully.
+        ///   Looks up a localized string similar to {0} uninstalled successfully..
         /// </summary>
         internal static string uninstallSuccess {
             get {
@@ -1883,6 +1991,24 @@ namespace Ecureuil.Properties {
         internal static string unknownUploader {
             get {
                 return ResourceManager.GetString("unknownUploader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update all.
+        /// </summary>
+        internal static string updateAll {
+            get {
+                return ResourceManager.GetString("updateAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updates.
+        /// </summary>
+        internal static string updates {
+            get {
+                return ResourceManager.GetString("updates", resourceCulture);
             }
         }
         
@@ -1977,6 +2103,15 @@ namespace Ecureuil.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enjoy Ecureuil, the package manager for Windows.
+        /// </summary>
+        internal static string welcome1Page5 {
+            get {
+                return ResourceManager.GetString("welcome1Page5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ecureuil is a package manager for desktop Windows, aiming at letitng older devices discover and install desktop apps, especially the ones made by the community, in an easier way.
         ///
         ///All you need to do is to add sources, search for the apps you want, and hit Install; Ecureuil manages everything else for you.
@@ -2017,6 +2152,15 @@ namespace Ecureuil.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The initial setup has finished, now you should be knowing all the basics of Ecureuil. If you want to report any issue, or bug, head to the GitHub page of Ecureuil and report them in the Issues tab..
+        /// </summary>
+        internal static string welcome2Page5 {
+            get {
+                return ResourceManager.GetString("welcome2Page5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add your sources.
         /// </summary>
         internal static string welcomePage2 {
@@ -2044,6 +2188,15 @@ namespace Ecureuil.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to That&apos;s all.
+        /// </summary>
+        internal static string welcomePage5 {
+            get {
+                return ResourceManager.GetString("welcomePage5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Windows .
         /// </summary>
         internal static string windowsPrefix {
@@ -2067,96 +2220,6 @@ namespace Ecureuil.Properties {
         internal static string zip {
             get {
                 return ResourceManager.GetString("zip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You cannot install or download this application because its source has not been added to your sources list. Please add the source first..
-        /// </summary>
-        internal static string sourceNotAddedWarning {
-            get {
-                return ResourceManager.GetString("sourceNotAddedWarning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Source Not Added.
-        /// </summary>
-        internal static string sourceNotAddedTitle {
-            get {
-                return ResourceManager.GetString("sourceNotAddedTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Since this is installed, remember to uninstall it from Control Panel..
-        /// </summary>
-        internal static string uninstallControlPanelNotice {
-            get {
-                return ResourceManager.GetString("uninstallControlPanelNotice", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to uninstall {0}?.
-        /// </summary>
-        internal static string uninstallConfirm {
-            get {
-                return ResourceManager.GetString("uninstallConfirm", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to uninstall {0}.
-        /// </summary>
-        internal static string uninstallFail {
-            get {
-                return ResourceManager.GetString("uninstallFail", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Copying dependency: {0}....
-        /// </summary>
-        internal static string depCopying {
-            get {
-                return ResourceManager.GetString("depCopying", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Copying dependency: {0} to Windows....
-        /// </summary>
-        internal static string depCopyingSystem {
-            get {
-                return ResourceManager.GetString("depCopyingSystem", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Install.
-        /// </summary>
-        internal static string actionInstall {
-            get {
-                return ResourceManager.GetString("actionInstall", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Copy.
-        /// </summary>
-        internal static string actionCopy {
-            get {
-                return ResourceManager.GetString("actionCopy", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Copy to System.
-        /// </summary>
-        internal static string actionCopySystem {
-            get {
-                return ResourceManager.GetString("actionCopySystem", resourceCulture);
             }
         }
     }

@@ -5,6 +5,7 @@ namespace Ecureuil.Core.Models {
     private string _appId;
     private string _installedVersion;
     private DateTime? _installedOn;
+    private DateTime? _installedDate;
     private string _installDirectory;
     private string _shortcutPath;
     private string _fileType;
@@ -23,6 +24,11 @@ namespace Ecureuil.Core.Models {
     public DateTime? InstalledOn {
       get { return _installedOn; }
       set { _installedOn = value; }
+    }
+
+    public DateTime? InstalledDate {
+      get { return _installedDate; }
+      set { _installedDate = value; }
     }
 
     public string InstallDirectory {

@@ -77,72 +77,19 @@ namespace Ecureuil
         {
             if (_model == null) return;
 
-            this.Text = (!string.IsNullOrEmpty(_model.name) ? _model.name : _model.id) + " - " + Resources.sourceDetails;
             createdDate.Text = Resources.createdOn;
             appUploaderText.Text = _model.dateCreated.HasValue ? _model.dateCreated.Value.ToString("dd/MM/yyyy") : "-";
             lastUpdated.Text = Resources.lastUpdated;
             lastUpdatedText.Text = _model.lastUpdated.HasValue ? _model.lastUpdated.Value.ToString("dd/MM/yyyy") : "-";
-            if (!_model.isEnabled) EnableDisableButton.Image = Resources.enable;
-            else EnableDisableButton.Image = Resources.disable;
 
-            // Configure URL label with tooltip and link behavior
+            // Configure URL labels with tooltip and link behavior
             ToolTip urlToolTip = new ToolTip();
             urlToolTip.AutoPopDelay = 10000;
             urlToolTip.InitialDelay = 200;
             urlToolTip.ReshowDelay = 100;
 
-            if (!string.IsNullOrEmpty(_model.url))
-            {
-                URLText.Text = Resources.link + " 1";
-                URLText.Cursor = Cursors.Hand;
-                URLText.ForeColor = Color.Blue;
-                URLText.Font = new Font(URLText.Font, FontStyle.Underline);
-                urlToolTip.SetToolTip(URLText, _model.url);
-                URLText.Click += delegate
-                {
-                    try
-                    {
-                        ProcessStartInfo psi = new ProcessStartInfo(_model.url);
-                        psi.UseShellExecute = true;
-                        Process.Start(psi);
-                    }
-                    catch { }
-                };
-            }
-            else
-            {
-                URLText.Text = "-";
-                URLText.Cursor = Cursors.Default;
-                URLText.ForeColor = SystemColors.ControlText;
-                URLText.Font = new Font(URLText.Font, FontStyle.Regular);
-            }
-
-            // Configure Original URL label with tooltip and link behavior
-            if (!string.IsNullOrEmpty(_model.originalURL))
-            {
-                originalURLText.Text = Resources.link + " 2";
-                originalURLText.Cursor = Cursors.Hand;
-                originalURLText.ForeColor = Color.Blue;
-                originalURLText.Font = new Font(originalURLText.Font, FontStyle.Underline);
-                urlToolTip.SetToolTip(originalURLText, _model.originalURL);
-                originalURLText.Click += delegate
-                {
-                    try
-                    {
-                        ProcessStartInfo psi = new ProcessStartInfo(_model.originalURL);
-                        psi.UseShellExecute = true;
-                        Process.Start(psi);
-                    }
-                    catch { }
-                };
-            }
-            else
-            {
-                originalURLText.Text = "-";
-                originalURLText.Cursor = Cursors.Default;
-                originalURLText.ForeColor = SystemColors.ControlText;
-                originalURLText.Font = new Font(originalURLText.Font, FontStyle.Regular);
-            }
+            ConfigureLinkLabel(URLText, _model.url, Resources.link + " 1", urlToolTip);
+            ConfigureLinkLabel(originalURLText, _model.originalURL, Resources.link + " 2", urlToolTip);
 
             // Filter apps belonging to this source first so metadata fallbacks work
             FilterSourceApps();
@@ -214,6 +161,35 @@ namespace Ecureuil
             if (groupByComboBox.Items.Count > 0) groupByComboBox.SelectedIndex = 0; // "(None)"
 
             ApplyFilterAndDisplay();
+        }
+
+        private void ConfigureLinkLabel(Label label, string url, string labelText, ToolTip tip)
+        {
+            if (!string.IsNullOrEmpty(url))
+            {
+                label.Text = labelText;
+                label.Cursor = Cursors.Hand;
+                label.ForeColor = Color.Blue;
+                label.Font = new Font(label.Font, FontStyle.Underline);
+                tip.SetToolTip(label, url);
+                label.Click += delegate
+                {
+                    try
+                    {
+                        ProcessStartInfo psi = new ProcessStartInfo(url);
+                        psi.UseShellExecute = true;
+                        Process.Start(psi);
+                    }
+                    catch { }
+                };
+            }
+            else
+            {
+                label.Text = "-";
+                label.Cursor = Cursors.Default;
+                label.ForeColor = SystemColors.ControlText;
+                label.Font = new Font(label.Font, FontStyle.Regular);
+            }
         }
 
         private void SetupCreatorLinksListViewColumns()

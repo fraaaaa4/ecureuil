@@ -150,50 +150,33 @@ namespace Ecureuil.Core.Services {
     private static extern IntPtr ShellExecute(IntPtr hwnd, string lpOperation, string lpFile, string lpParameters, string lpDirectory, int nShowCmd);
 
     public static void OpenAddRemovePrograms() {
-      // 1. ShellExecute on control.exe (Windows searches %windir% and system32 automatically)
       try {
         IntPtr res = ShellExecute(IntPtr.Zero, "open", "control.exe", "appwiz.cpl", null, 1);
         if ((long)res > 32) return;
       } catch { }
 
-      // 2. ShellExecute on rundll32.exe
       try {
-        IntPtr res = ShellExecute(IntPtr.Zero, "open", "rundll32.exe", "shell32.dll,Control_RunDLL appwiz.cpl", null, 1);
-        if ((long)res > 32) return;
-      } catch { }
+        Process.Start("control.exe", "appwiz.cpl");
+      } catch {
+        try { Process.Start("appwiz.cpl"); } catch { }
+      }
+    }
 
-      // 3. cmd.exe /c start "" appwiz.cpl (Executes shell association command in all Windows versions)
-      try {
-        ProcessStartInfo psi = new ProcessStartInfo("cmd.exe", "/c start \"\" appwiz.cpl");
-        psi.CreateNoWindow = true;
-        psi.UseShellExecute = false;
-        psi.WindowStyle = ProcessWindowStyle.Hidden;
-        Process p = Process.Start(psi);
-        if (p != null) return;
-      } catch { }
+    private static bool RunProcessAndWait(string fileName, string arguments, string workingDirectory) {
+      ProcessStartInfo psi = new ProcessStartInfo();
+      psi.FileName = fileName;
+      psi.Arguments = arguments ?? "";
+      if (!string.IsNullOrEmpty(workingDirectory)) {
+        psi.WorkingDirectory = workingDirectory;
+      }
+      psi.UseShellExecute = true;
 
-      // 4. cmd.exe /c control.exe appwiz.cpl
-      try {
-        ProcessStartInfo psi = new ProcessStartInfo("cmd.exe", "/c control.exe appwiz.cpl");
-        psi.CreateNoWindow = true;
-        psi.UseShellExecute = false;
-        psi.WindowStyle = ProcessWindowStyle.Hidden;
-        Process p = Process.Start(psi);
-        if (p != null) return;
-      } catch { }
-
-      // 5. Direct ProcessStartInfo
-      try {
-        ProcessStartInfo psi = new ProcessStartInfo("control.exe", "appwiz.cpl");
-        psi.UseShellExecute = true;
-        Process.Start(psi);
-        return;
-      } catch { }
-
-      // 6. Direct Process.Start fallback
-      try {
-        Process.Start("appwiz.cpl");
-      } catch { }
+      Process process = Process.Start(psi);
+      if (process != null) {
+        process.WaitForExit();
+        return process.ExitCode == 0 || process.ExitCode == 3010;
+      }
+      return false;
     }
 
     // Installs app based on the type of file
@@ -219,34 +202,17 @@ namespace Ecureuil.Core.Services {
         if (fileType == "msi" || downloadedFilePath.EndsWith(".msi", StringComparison.OrdinalIgnoreCase)) {
           isInstallerPackage = true;
           string args = argsInstall(app.installParameters);
-          ProcessStartInfo psi = new ProcessStartInfo();
-          psi.FileName = "msiexec.exe";
-          psi.Arguments = "/i \"" + downloadedFilePath + "\"" + (!string.IsNullOrEmpty(args) ? (" " + args) : "");
-          psi.UseShellExecute = true;
-
-          Process process = Process.Start(psi);
-          if (process != null) {
-            process.WaitForExit();
-            if (process.ExitCode != 0 && process.ExitCode != 3010) {
-              return false;
-            }
+          string msiArgs = "/i \"" + downloadedFilePath + "\"" + (!string.IsNullOrEmpty(args) ? (" " + args) : "");
+          if (!RunProcessAndWait("msiexec.exe", msiArgs, null)) {
+            return false;
           }
         } else if (fileType == "exe" || downloadedFilePath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) {
           if (!app.isPortable) {
             // Installer EXE (setup / wizard wizard that installs into OS)
             isInstallerPackage = true;
             string args = argsInstall(app.installParameters);
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.FileName = downloadedFilePath;
-            psi.Arguments = args;
-            psi.UseShellExecute = true;
-
-            Process process = Process.Start(psi);
-            if (process != null) {
-              process.WaitForExit();
-              if (process.ExitCode != 0 && process.ExitCode != 3010) {
-                return false;
-              }
+            if (!RunProcessAndWait(downloadedFilePath, args, null)) {
+              return false;
             }
           } else {
             // Portable standalone EXE managed by Ecureuil
@@ -300,23 +266,15 @@ namespace Ecureuil.Core.Services {
               }
 
               string args = argsInstall(app.installParameters);
-              ProcessStartInfo psi = new ProcessStartInfo();
+              string runExe = targetInstaller;
+              string runArgs = args;
               if (targetInstaller.EndsWith(".msi", StringComparison.OrdinalIgnoreCase)) {
-                psi.FileName = "msiexec.exe";
-                psi.Arguments = "/i \"" + targetInstaller + "\"" + (!string.IsNullOrEmpty(args) ? (" " + args) : "");
-              } else {
-                psi.FileName = targetInstaller;
-                psi.Arguments = args;
+                runExe = "msiexec.exe";
+                runArgs = "/i \"" + targetInstaller + "\"" + (!string.IsNullOrEmpty(args) ? (" " + args) : "");
               }
-              psi.WorkingDirectory = Path.GetDirectoryName(targetInstaller);
-              psi.UseShellExecute = true;
 
-              Process process = Process.Start(psi);
-              if (process != null) {
-                process.WaitForExit();
-                if (process.ExitCode != 0 && process.ExitCode != 3010) {
-                  return false;
-                }
+              if (!RunProcessAndWait(runExe, runArgs, Path.GetDirectoryName(targetInstaller))) {
+                return false;
               }
             } finally {
               try {
@@ -370,8 +328,10 @@ namespace Ecureuil.Core.Services {
         }
 
         DateTime now = DateTime.Now;
+        DateTime? releaseDate = app.dateSource.HasValue ? app.dateSource : (app.dateOriginal.HasValue ? app.dateOriginal : now);
         app.isInstalled = true;
         app.installedOn = now;
+        app.installedDate = releaseDate;
         app.installDirectory = isInstallerPackage ? null : targetFolder;
         app.installedShortcutPath = shortcutPath;
 
@@ -381,6 +341,7 @@ namespace Ecureuil.Core.Services {
           record.AppId = app.id;
           record.InstalledVersion = app.version;
           record.InstalledOn = now;
+          record.InstalledDate = releaseDate;
           record.InstallDirectory = isInstallerPackage ? null : targetFolder;
           record.ShortcutPath = shortcutPath;
           record.FileType = fileType;
@@ -427,6 +388,7 @@ namespace Ecureuil.Core.Services {
 
         app.isInstalled = false;
         app.installedOn = null;
+        app.installedDate = null;
         app.installDirectory = null;
         app.installedShortcutPath = null;
 

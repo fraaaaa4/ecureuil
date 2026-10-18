@@ -701,7 +701,7 @@
     <value>Are you sure you want to uninstall</value>
   </data>
   <data name="uninstallSuccess" xml:space="preserve">
-    <value>uninstalled successfully</value>
+    <value>{0} uninstalled successfully.</value>
   </data>
   <data name="uninstallWarning" xml:space="preserve">
     <value>Since this was installed via a setup, remember to uninstall it from Control Panel.</value>
@@ -816,9 +816,6 @@ Before starting, make sure your computer is connected to internet in order to do
   <data name="uninstallConfirm" xml:space="preserve">
     <value>Are you sure you want to uninstall {0}?</value>
   </data>
-  <data name="uninstallSuccess" xml:space="preserve">
-    <value>{0} uninstalled successfully.</value>
-  </data>
   <data name="uninstallFail" xml:space="preserve">
     <value>Failed to uninstall {0}</value>
   </data>
@@ -836,5 +833,26 @@ Before starting, make sure your computer is connected to internet in order to do
   </data>
   <data name="actionCopySystem" xml:space="preserve">
     <value>Copy to System</value>
+  </data>
+  <data name="updates" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="noUpdatesAvailable" xml:space="preserve">
+    <value>No updates available.</value>
+  </data>
+  <data name="checkingForUpdates" xml:space="preserve">
+    <value>Checking for updates...</value>
+  </data>
+  <data name="updateAll" xml:space="preserve">
+    <value>Update all</value>
+  </data>
+  <data name="welcome1Page5" xml:space="preserve">
+    <value>Enjoy Ecureuil, the package manager for Windows</value>
+  </data>
+  <data name="welcome2Page5" xml:space="preserve">
+    <value>The initial setup has finished, now you should be knowing all the basics of Ecureuil. If you want to report any issue, or bug, head to the GitHub page of Ecureuil and report them in the Issues tab.</value>
+  </data>
+  <data name="welcomePage5" xml:space="preserve">
+    <value>That's all</value>
   </data>
 </root>
