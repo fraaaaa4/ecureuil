@@ -70,11 +70,12 @@ namespace Ecureuil
             this.installedSourcesText = new System.Windows.Forms.Label();
             this.sourcesDescription = new System.Windows.Forms.Label();
             this.sourcesTitle = new System.Windows.Forms.Label();
+            this.txtUpdatesStatus = new System.Windows.Forms.TextBox();
             this.categoryItemView = new System.Windows.Forms.ListView();
             this._appImageList = new System.Windows.Forms.ImageList(this.components);
             this.discoverSources = new System.Windows.Forms.Panel();
+            this.updateAllButton = new System.Windows.Forms.Button();
             this.discoverSourcesText1 = new System.Windows.Forms.Label();
-            this.txtUpdatesStatus = new System.Windows.Forms.TextBox();
             this.sourcePanel = new System.Windows.Forms.Panel();
             this.sourceDescription = new System.Windows.Forms.Label();
             this.sourceCreation = new System.Windows.Forms.Label();
@@ -103,8 +104,8 @@ namespace Ecureuil
             this.toolStripSeparatorOrder = new System.Windows.Forms.ToolStripSeparator();
             this.cmbOrderBy = new System.Windows.Forms.ToolStripComboBox();
             this.lblOrderBy = new System.Windows.Forms.ToolStripLabel();
-            this.updateAllButton = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -140,27 +141,27 @@ namespace Ecureuil
             this.testToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // testToolStripMenuItem
             // 
             this.testToolStripMenuItem.Name = "testToolStripMenuItem";
-            this.testToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.testToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
             this.testToolStripMenuItem.Text = "Test";
             this.testToolStripMenuItem.Click += new System.EventHandler(this.testToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
             // 
             // viewToolStripMenuItem
@@ -172,33 +173,33 @@ namespace Ecureuil
             this.toolStripSeparator2,
             this.appViewToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
             // 
             // sidebarToolStripMenuItem
             // 
             this.sidebarToolStripMenuItem.Name = "sidebarToolStripMenuItem";
-            this.sidebarToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.sidebarToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.sidebarToolStripMenuItem.Text = "Sidebar";
             this.sidebarToolStripMenuItem.Click += new System.EventHandler(this.sidebarToolStripMenuItem_Click);
             // 
             // navigationBarToolStripMenuItem
             // 
             this.navigationBarToolStripMenuItem.Name = "navigationBarToolStripMenuItem";
-            this.navigationBarToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.navigationBarToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.navigationBarToolStripMenuItem.Text = "Toolbar";
             this.navigationBarToolStripMenuItem.Click += new System.EventHandler(this.navigationBarToolStripMenuItem_Click);
             // 
             // statusBarToolStripMenuItem
             // 
             this.statusBarToolStripMenuItem.Name = "statusBarToolStripMenuItem";
-            this.statusBarToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.statusBarToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.statusBarToolStripMenuItem.Text = "Status bar";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(132, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(123, 6);
             // 
             // appViewToolStripMenuItem
             // 
@@ -209,41 +210,41 @@ namespace Ecureuil
             this.listToolStripMenuItem,
             this.tileToolStripMenuItem});
             this.appViewToolStripMenuItem.Name = "appViewToolStripMenuItem";
-            this.appViewToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.appViewToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.appViewToolStripMenuItem.Text = "App view";
             // 
             // largeIconsToolStripMenuItem
             // 
             this.largeIconsToolStripMenuItem.Name = "largeIconsToolStripMenuItem";
-            this.largeIconsToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.largeIconsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.largeIconsToolStripMenuItem.Text = "Large icons";
             this.largeIconsToolStripMenuItem.Click += new System.EventHandler(this.largeIconsToolStripMenuItem_Click);
             // 
             // smallIconsToolStripMenuItem
             // 
             this.smallIconsToolStripMenuItem.Name = "smallIconsToolStripMenuItem";
-            this.smallIconsToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.smallIconsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.smallIconsToolStripMenuItem.Text = "Small icons";
             this.smallIconsToolStripMenuItem.Click += new System.EventHandler(this.smallIconsToolStripMenuItem_Click);
             // 
             // detailsToolStripMenuItem
             // 
             this.detailsToolStripMenuItem.Name = "detailsToolStripMenuItem";
-            this.detailsToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.detailsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.detailsToolStripMenuItem.Text = "Details";
             this.detailsToolStripMenuItem.Click += new System.EventHandler(this.detailsToolStripMenuItem_Click);
             // 
             // listToolStripMenuItem
             // 
             this.listToolStripMenuItem.Name = "listToolStripMenuItem";
-            this.listToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.listToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.listToolStripMenuItem.Text = "List";
             this.listToolStripMenuItem.Click += new System.EventHandler(this.listToolStripMenuItem_Click);
             // 
             // tileToolStripMenuItem
             // 
             this.tileToolStripMenuItem.Name = "tileToolStripMenuItem";
-            this.tileToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.tileToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.tileToolStripMenuItem.Text = "Tile";
             this.tileToolStripMenuItem.Click += new System.EventHandler(this.tileToolStripMenuItem_Click);
             // 
@@ -252,13 +253,13 @@ namespace Ecureuil
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.settingsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
@@ -270,31 +271,31 @@ namespace Ecureuil
             this.initialSetupToolStripMenuItem,
             this.aboutEcureuilToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
             // 
             // helpToolStripMenuItem1
             // 
             this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
-            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(154, 22);
+            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.helpToolStripMenuItem1.Text = "Help";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(151, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
             // 
             // initialSetupToolStripMenuItem
             // 
             this.initialSetupToolStripMenuItem.Name = "initialSetupToolStripMenuItem";
-            this.initialSetupToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.initialSetupToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.initialSetupToolStripMenuItem.Text = "Initial setup";
             this.initialSetupToolStripMenuItem.Click += new System.EventHandler(this.initialSetupToolStripMenuItem_Click);
             // 
             // aboutEcureuilToolStripMenuItem
             // 
             this.aboutEcureuilToolStripMenuItem.Name = "aboutEcureuilToolStripMenuItem";
-            this.aboutEcureuilToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.aboutEcureuilToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutEcureuilToolStripMenuItem.Text = "About Ecureuil";
             this.aboutEcureuilToolStripMenuItem.Click += new System.EventHandler(this.aboutEcureuilToolStripMenuItem_Click);
             // 
@@ -468,8 +469,8 @@ namespace Ecureuil
             this.installedSources.Name = "installedSources";
             this.installedSources.Size = new System.Drawing.Size(177, 186);
             this.installedSources.TabIndex = 20;
-            this.installedSources.DoubleClick += new System.EventHandler(this.installedSources_DoubleClick);
             this.installedSources.SelectedIndexChanged += new System.EventHandler(this.installedSources_SelectedIndexChanged);
+            this.installedSources.DoubleClick += new System.EventHandler(this.installedSources_DoubleClick);
             // 
             // installedSourcesText
             // 
@@ -504,6 +505,21 @@ namespace Ecureuil
             this.sourcesTitle.TabIndex = 8;
             this.sourcesTitle.Text = "Sources";
             // 
+            // txtUpdatesStatus
+            // 
+            this.txtUpdatesStatus.BackColor = System.Drawing.SystemColors.Window;
+            this.txtUpdatesStatus.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtUpdatesStatus.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtUpdatesStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtUpdatesStatus.Location = new System.Drawing.Point(0, 76);
+            this.txtUpdatesStatus.Multiline = true;
+            this.txtUpdatesStatus.Name = "txtUpdatesStatus";
+            this.txtUpdatesStatus.ReadOnly = true;
+            this.txtUpdatesStatus.Size = new System.Drawing.Size(582, 346);
+            this.txtUpdatesStatus.TabIndex = 21;
+            this.txtUpdatesStatus.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txtUpdatesStatus.Visible = false;
+            // 
             // categoryItemView
             // 
             this.categoryItemView.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -536,6 +552,21 @@ namespace Ecureuil
             this.discoverSources.Size = new System.Drawing.Size(582, 22);
             this.discoverSources.TabIndex = 2;
             // 
+            // updateAllButton
+            // 
+            this.updateAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.updateAllButton.BackColor = System.Drawing.SystemColors.Control;
+            this.updateAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.updateAllButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.updateAllButton.Location = new System.Drawing.Point(509, 0);
+            this.updateAllButton.Name = "updateAllButton";
+            this.updateAllButton.Size = new System.Drawing.Size(72, 22);
+            this.updateAllButton.TabIndex = 1;
+            this.updateAllButton.Text = "Update all";
+            this.updateAllButton.UseVisualStyleBackColor = false;
+            this.updateAllButton.Visible = false;
+            this.updateAllButton.Click += new System.EventHandler(this.updateAllButton_Click);
+            // 
             // discoverSourcesText1
             // 
             this.discoverSourcesText1.AutoSize = true;
@@ -546,35 +577,6 @@ namespace Ecureuil
             this.discoverSourcesText1.Size = new System.Drawing.Size(90, 13);
             this.discoverSourcesText1.TabIndex = 0;
             this.discoverSourcesText1.Text = "Navigation bar";
-            // 
-            // updateAllButton
-            // 
-            this.updateAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.updateAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.updateAllButton.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.updateAllButton.Location = new System.Drawing.Point(495, 1);
-            this.updateAllButton.Name = "updateAllButton";
-            this.updateAllButton.Size = new System.Drawing.Size(82, 20);
-            this.updateAllButton.TabIndex = 1;
-            this.updateAllButton.Text = "Update all";
-            this.updateAllButton.UseVisualStyleBackColor = true;
-            this.updateAllButton.Visible = false;
-            this.updateAllButton.Click += new System.EventHandler(this.updateAllButton_Click);
-            // 
-            // txtUpdatesStatus
-            // 
-            this.txtUpdatesStatus.BackColor = System.Drawing.SystemColors.Window;
-            this.txtUpdatesStatus.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtUpdatesStatus.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtUpdatesStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtUpdatesStatus.Location = new System.Drawing.Point(0, 76);
-            this.txtUpdatesStatus.Multiline = true;
-            this.txtUpdatesStatus.Name = "txtUpdatesStatus";
-            this.txtUpdatesStatus.ReadOnly = true;
-            this.txtUpdatesStatus.Size = new System.Drawing.Size(582, 346);
-            this.txtUpdatesStatus.TabIndex = 21;
-            this.txtUpdatesStatus.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.txtUpdatesStatus.Visible = false;
             // 
             // sourcePanel
             // 
@@ -673,26 +675,26 @@ namespace Ecureuil
             this.addSourceContextText,
             this.discoverSourcesToolStripMenuItem});
             this.addContextMenu.Name = "addContextMenu";
-            this.addContextMenu.Size = new System.Drawing.Size(167, 49);
+            this.addContextMenu.Size = new System.Drawing.Size(163, 51);
             this.addContextMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.addContextMenu_Closed);
             this.addContextMenu.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.addContextMenu_Closing);
             // 
             // addSourceContextText
             // 
             this.addSourceContextText.Name = "addSourceContextText";
-            this.addSourceContextText.Size = new System.Drawing.Size(100, 21);
+            this.addSourceContextText.Size = new System.Drawing.Size(100, 23);
             this.addSourceContextText.Text = "Add source URL";
-            this.addSourceContextText.KeyDown += new System.Windows.Forms.KeyEventHandler(this.addSourceContextText_KeyDown);
             this.addSourceContextText.Enter += new System.EventHandler(this.addSourceContextText_Enter);
             this.addSourceContextText.Leave += new System.EventHandler(this.addSourceContextText_Leave);
+            this.addSourceContextText.KeyDown += new System.Windows.Forms.KeyEventHandler(this.addSourceContextText_KeyDown);
             this.addSourceContextText.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.addSourceContextText_KeyPress);
-            this.addSourceContextText.TextChanged += new System.EventHandler(this.addSourceContextText_TextChanged);
             this.addSourceContextText.Click += new System.EventHandler(this.addSourceContextText_Click);
+            this.addSourceContextText.TextChanged += new System.EventHandler(this.addSourceContextText_TextChanged);
             // 
             // discoverSourcesToolStripMenuItem
             // 
             this.discoverSourcesToolStripMenuItem.Name = "discoverSourcesToolStripMenuItem";
-            this.discoverSourcesToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.discoverSourcesToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.discoverSourcesToolStripMenuItem.Text = "Discover sources";
             this.discoverSourcesToolStripMenuItem.Click += new System.EventHandler(this.discoverSourcesToolStripMenuItem_Click);
             // 
@@ -714,6 +716,7 @@ namespace Ecureuil
             this.lblOrderBy});
             this.mainToolStrip.Location = new System.Drawing.Point(0, 24);
             this.mainToolStrip.Name = "mainToolStrip";
+            this.mainToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.mainToolStrip.Size = new System.Drawing.Size(716, 25);
             this.mainToolStrip.TabIndex = 2;
             this.mainToolStrip.Text = "mainToolStrip";
@@ -725,27 +728,27 @@ namespace Ecureuil
             this.iconsOnlyMenuItem,
             this.textIconMenuItem});
             this.ToolbarMenu.Name = "ToolbarMenu";
-            this.ToolbarMenu.Size = new System.Drawing.Size(156, 70);
+            this.ToolbarMenu.Size = new System.Drawing.Size(151, 70);
             this.ToolbarMenu.Text = "Text only";
             // 
             // textOnlyMenuItem
             // 
             this.textOnlyMenuItem.Name = "textOnlyMenuItem";
-            this.textOnlyMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.textOnlyMenuItem.Size = new System.Drawing.Size(150, 22);
             this.textOnlyMenuItem.Text = "Text only";
             this.textOnlyMenuItem.Click += new System.EventHandler(this.textOnlyMenuItem_Click);
             // 
             // iconsOnlyMenuItem
             // 
             this.iconsOnlyMenuItem.Name = "iconsOnlyMenuItem";
-            this.iconsOnlyMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.iconsOnlyMenuItem.Size = new System.Drawing.Size(150, 22);
             this.iconsOnlyMenuItem.Text = "Icons only";
             this.iconsOnlyMenuItem.Click += new System.EventHandler(this.iconsOnlyMenuItem_Click);
             // 
             // textIconMenuItem
             // 
             this.textIconMenuItem.Name = "textIconMenuItem";
-            this.textIconMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.textIconMenuItem.Size = new System.Drawing.Size(150, 22);
             this.textIconMenuItem.Text = "Text and icons";
             this.textIconMenuItem.Click += new System.EventHandler(this.textIconMenuItem_Click);
             // 
@@ -825,7 +828,7 @@ namespace Ecureuil
             this.lblGroupBy.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.lblGroupBy.Image = global::Ecureuil.Properties.Resources.GroupBy;
             this.lblGroupBy.Name = "lblGroupBy";
-            this.lblGroupBy.Size = new System.Drawing.Size(71, 22);
+            this.lblGroupBy.Size = new System.Drawing.Size(75, 22);
             this.lblGroupBy.Text = "Group by:";
             // 
             // toolStripSeparatorOrder
@@ -855,18 +858,8 @@ namespace Ecureuil
             this.lblOrderBy.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.lblOrderBy.Image = global::Ecureuil.Properties.Resources.orderBy;
             this.lblOrderBy.Name = "lblOrderBy";
-            this.lblOrderBy.Size = new System.Drawing.Size(70, 22);
+            this.lblOrderBy.Size = new System.Drawing.Size(72, 22);
             this.lblOrderBy.Text = "Order by:";
-            // 
-            // updateAllButton
-            // 
-            this.updateAllButton.BackColor = System.Drawing.SystemColors.Control;
-            this.updateAllButton.Location = new System.Drawing.Point(509, 0);
-            this.updateAllButton.Name = "updateAllButton";
-            this.updateAllButton.Size = new System.Drawing.Size(72, 22);
-            this.updateAllButton.TabIndex = 1;
-            this.updateAllButton.Text = "Update all";
-            this.updateAllButton.UseVisualStyleBackColor = false;
             // 
             // mainWindow
             // 
@@ -885,6 +878,8 @@ namespace Ecureuil
             this.menuStrip1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.navigationTop.ResumeLayout(false);
             this.navigationTop.PerformLayout();

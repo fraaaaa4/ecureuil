@@ -22,61 +22,76 @@ namespace Ecureuil.Core.Helpers {
       [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Ansi)]
       [SuppressUnmanagedCodeSecurity]
       public static extern IntPtr GetProcAddress(IntPtr hModule, [MarshalAs(UnmanagedType.LPStr)] string lpProcName);
-
-      private const string LIBSSL = "libssl-3.dll";
-
-      [DllImport(LIBSSL, CallingConvention = CallingConvention.Cdecl, EntryPoint = "OPENSSL_init_ssl")]
-      [SuppressUnmanagedCodeSecurity]
-      public static extern int OPENSSL_init_ssl(ulong opts, IntPtr settings);
-
-      [DllImport(LIBSSL, CallingConvention = CallingConvention.Cdecl, EntryPoint = "TLS_client_method")]
-      [SuppressUnmanagedCodeSecurity]
-      public static extern IntPtr TLS_client_method();
-
-      [DllImport(LIBSSL, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SSL_CTX_new")]
-      [SuppressUnmanagedCodeSecurity]
-      public static extern IntPtr SSL_CTX_new(IntPtr method);
-
-      [DllImport(LIBSSL, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SSL_CTX_free")]
-      [SuppressUnmanagedCodeSecurity]
-      public static extern void SSL_CTX_free(IntPtr ctx);
-
-      [DllImport(LIBSSL, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SSL_new")]
-      [SuppressUnmanagedCodeSecurity]
-      public static extern IntPtr SSL_new(IntPtr ctx);
-
-      [DllImport(LIBSSL, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SSL_free")]
-      [SuppressUnmanagedCodeSecurity]
-      public static extern void SSL_free(IntPtr ssl);
-
-      [DllImport(LIBSSL, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SSL_set_fd")]
-      [SuppressUnmanagedCodeSecurity]
-      public static extern int SSL_set_fd(IntPtr ssl, int fd);
-
-      [DllImport(LIBSSL, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SSL_ctrl")]
-      [SuppressUnmanagedCodeSecurity]
-      public static extern IntPtr SSL_ctrl(IntPtr ssl, int cmd, IntPtr larg, [MarshalAs(UnmanagedType.LPStr)] string parg);
-
-      [DllImport(LIBSSL, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SSL_connect")]
-      [SuppressUnmanagedCodeSecurity]
-      public static extern int SSL_connect(IntPtr ssl);
-
-      [DllImport(LIBSSL, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SSL_write")]
-      [SuppressUnmanagedCodeSecurity]
-      public static extern int SSL_write(IntPtr ssl, byte[] buf, int num);
-
-      [DllImport(LIBSSL, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SSL_read")]
-      [SuppressUnmanagedCodeSecurity]
-      public static extern int SSL_read(IntPtr ssl, byte[] buf, int num);
-
-      [DllImport(LIBSSL, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SSL_shutdown")]
-      [SuppressUnmanagedCodeSecurity]
-      public static extern int SSL_shutdown(IntPtr ssl);
-
-      [DllImport(LIBSSL, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SSL_get_error")]
-      [SuppressUnmanagedCodeSecurity]
-      public static extern int SSL_get_error(IntPtr ssl, int ret);
     }
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    [SuppressUnmanagedCodeSecurity]
+    private delegate int OpenSslInitSslDelegate(ulong opts, IntPtr settings);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    [SuppressUnmanagedCodeSecurity]
+    private delegate IntPtr TlsClientMethodDelegate();
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    [SuppressUnmanagedCodeSecurity]
+    private delegate IntPtr SslCtxNewDelegate(IntPtr method);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    [SuppressUnmanagedCodeSecurity]
+    private delegate void SslCtxFreeDelegate(IntPtr ctx);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    [SuppressUnmanagedCodeSecurity]
+    private delegate IntPtr SslNewDelegate(IntPtr ctx);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    [SuppressUnmanagedCodeSecurity]
+    private delegate void SslFreeDelegate(IntPtr ssl);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    [SuppressUnmanagedCodeSecurity]
+    private delegate int SslSetFdDelegate(IntPtr ssl, int fd);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    [SuppressUnmanagedCodeSecurity]
+    private delegate IntPtr SslCtrlDelegate(IntPtr ssl, int cmd, IntPtr larg, [MarshalAs(UnmanagedType.LPStr)] string parg);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    [SuppressUnmanagedCodeSecurity]
+    private delegate int SslConnectDelegate(IntPtr ssl);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    [SuppressUnmanagedCodeSecurity]
+    private delegate int SslWriteDelegate(IntPtr ssl, byte[] buf, int num);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    [SuppressUnmanagedCodeSecurity]
+    private delegate int SslReadDelegate(IntPtr ssl, byte[] buf, int num);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    [SuppressUnmanagedCodeSecurity]
+    private delegate int SslShutdownDelegate(IntPtr ssl);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    [SuppressUnmanagedCodeSecurity]
+    private delegate int SslGetErrorDelegate(IntPtr ssl, int ret);
+
+    private static OpenSslInitSslDelegate _fnInitSsl;
+    private static TlsClientMethodDelegate _fnTlsClientMethod;
+    private static SslCtxNewDelegate _fnSslCtxNew;
+    private static SslCtxFreeDelegate _fnSslCtxFree;
+    private static SslNewDelegate _fnSslNew;
+    private static SslFreeDelegate _fnSslFree;
+    private static SslSetFdDelegate _fnSslSetFd;
+    private static SslCtrlDelegate _fnSslCtrl;
+    private static SslConnectDelegate _fnSslConnect;
+    private static SslWriteDelegate _fnSslWrite;
+    private static SslReadDelegate _fnSslRead;
+    private static SslShutdownDelegate _fnSslShutdown;
+    private static SslGetErrorDelegate _fnSslGetError;
+
+    private static IntPtr _hCrypto = IntPtr.Zero;
+    private static IntPtr _hSsl = IntPtr.Zero;
 
     private const int SSL_CTRL_SET_TLSEXT_HOSTNAME = 55;
     private const int TLSEXT_NAMETYPE_host_name = 0;
@@ -104,93 +119,139 @@ namespace Ecureuil.Core.Helpers {
       }
     }
 
+    private static T GetExport<T>(IntPtr hSsl, IntPtr hCrypto, string procName) where T : class {
+      IntPtr proc = Win32Native.GetProcAddress(hSsl, procName);
+      if (proc == IntPtr.Zero && hCrypto != IntPtr.Zero) {
+        proc = Win32Native.GetProcAddress(hCrypto, procName);
+      }
+      if (proc == IntPtr.Zero) {
+        throw new EntryPointNotFoundException("Function not found in OpenSSL: " + procName + " (Win32 Error: " + Marshal.GetLastWin32Error() + ")");
+      }
+      return Marshal.GetDelegateForFunctionPointer(proc, typeof(T)) as T;
+    }
+
     private static bool CheckAvailability() {
       if (IntPtr.Size != 4) {
         _initErrorMessage = "OpenSSL native DLLs are 32-bit; current process is 64-bit.";
         return false;
       }
 
+      string arch = OSver.GetArchitecture();
+      bool isArm = string.Equals(arch, "arm32", StringComparison.OrdinalIgnoreCase);
+
       string appDir = AppDomain.CurrentDomain.BaseDirectory;
-      string cryptoPath = Path.Combine(appDir, "libcrypto-3.dll");
-      string sslPath = Path.Combine(appDir, "libssl-3.dll");
+      string cryptoPath;
+      string sslPath;
+
+      if (isArm) {
+        // Su Windows RT / ARM32, libunwind.dll e una dipendenza necessaria di OpenSSL ARM32
+        string unwindPath = Path.Combine(appDir, "libunwind.dll");
+        if (File.Exists(unwindPath)) {
+          Win32Native.LoadLibrary(unwindPath);
+        }
+
+        cryptoPath = Path.Combine(appDir, "libcrypto-3-arm.dll");
+        if (!File.Exists(cryptoPath)) cryptoPath = Path.Combine(appDir, "libcrypto-3.dll");
+
+        sslPath = Path.Combine(appDir, "libssl-3-arm.dll");
+        if (!File.Exists(sslPath)) sslPath = Path.Combine(appDir, "libssl-3.dll");
+      } else {
+        // x86 32-bit
+        cryptoPath = Path.Combine(appDir, "libcrypto-3.dll");
+        sslPath = Path.Combine(appDir, "libssl-3.dll");
+      }
 
       if (!File.Exists(cryptoPath)) {
-        _initErrorMessage = "libcrypto-3.dll not found at: " + cryptoPath;
+        _initErrorMessage = Path.GetFileName(cryptoPath) + " not found at: " + cryptoPath;
         return false;
       }
       if (!File.Exists(sslPath)) {
-        _initErrorMessage = "libssl-3.dll not found at: " + sslPath;
+        _initErrorMessage = Path.GetFileName(sslPath) + " not found at: " + sslPath;
         return false;
       }
 
-      IntPtr hCrypto = Win32Native.LoadLibrary(cryptoPath);
-      if (hCrypto == IntPtr.Zero) {
-        _initErrorMessage = "LoadLibrary failed for libcrypto-3.dll (Win32 Error: " + Marshal.GetLastWin32Error() + ")";
+      _hCrypto = Win32Native.LoadLibrary(cryptoPath);
+      if (_hCrypto == IntPtr.Zero) {
+        _initErrorMessage = "LoadLibrary failed for " + Path.GetFileName(cryptoPath) + " (Win32 Error: " + Marshal.GetLastWin32Error() + ")";
         return false;
       }
 
-      IntPtr hSsl = Win32Native.LoadLibrary(sslPath);
-      if (hSsl == IntPtr.Zero) {
-        _initErrorMessage = "LoadLibrary failed for libssl-3.dll (Win32 Error: " + Marshal.GetLastWin32Error() + ")";
+      _hSsl = Win32Native.LoadLibrary(sslPath);
+      if (_hSsl == IntPtr.Zero) {
+        _initErrorMessage = "LoadLibrary failed for " + Path.GetFileName(sslPath) + " (Win32 Error: " + Marshal.GetLastWin32Error() + ")";
         return false;
       }
 
       try {
-        Win32Native.OPENSSL_init_ssl(0, IntPtr.Zero);
+        _fnInitSsl = GetExport<OpenSslInitSslDelegate>(_hSsl, _hCrypto, "OPENSSL_init_ssl");
+        _fnTlsClientMethod = GetExport<TlsClientMethodDelegate>(_hSsl, _hCrypto, "TLS_client_method");
+        _fnSslCtxNew = GetExport<SslCtxNewDelegate>(_hSsl, _hCrypto, "SSL_CTX_new");
+        _fnSslCtxFree = GetExport<SslCtxFreeDelegate>(_hSsl, _hCrypto, "SSL_CTX_free");
+        _fnSslNew = GetExport<SslNewDelegate>(_hSsl, _hCrypto, "SSL_new");
+        _fnSslFree = GetExport<SslFreeDelegate>(_hSsl, _hCrypto, "SSL_free");
+        _fnSslSetFd = GetExport<SslSetFdDelegate>(_hSsl, _hCrypto, "SSL_set_fd");
+        _fnSslCtrl = GetExport<SslCtrlDelegate>(_hSsl, _hCrypto, "SSL_ctrl");
+        _fnSslConnect = GetExport<SslConnectDelegate>(_hSsl, _hCrypto, "SSL_connect");
+        _fnSslWrite = GetExport<SslWriteDelegate>(_hSsl, _hCrypto, "SSL_write");
+        _fnSslRead = GetExport<SslReadDelegate>(_hSsl, _hCrypto, "SSL_read");
+        _fnSslShutdown = GetExport<SslShutdownDelegate>(_hSsl, _hCrypto, "SSL_shutdown");
+        _fnSslGetError = GetExport<SslGetErrorDelegate>(_hSsl, _hCrypto, "SSL_get_error");
+
+        _fnInitSsl(0, IntPtr.Zero);
         return true;
       } catch (Exception ex) {
-        _initErrorMessage = "OPENSSL_init_ssl error: " + ex.Message;
+        _initErrorMessage = "OpenSSL init error: " + ex.Message;
         return false;
       }
     }
 
     public static IntPtr TLS_client_method() {
-      return Win32Native.TLS_client_method();
+      return _fnTlsClientMethod();
     }
 
     public static IntPtr SSL_CTX_new(IntPtr method) {
-      return Win32Native.SSL_CTX_new(method);
+      return _fnSslCtxNew(method);
     }
 
     public static void SSL_CTX_free(IntPtr ctx) {
-      Win32Native.SSL_CTX_free(ctx);
+      _fnSslCtxFree(ctx);
     }
 
     public static IntPtr SSL_new(IntPtr ctx) {
-      return Win32Native.SSL_new(ctx);
+      return _fnSslNew(ctx);
     }
 
     public static void SSL_free(IntPtr ssl) {
-      Win32Native.SSL_free(ssl);
+      _fnSslFree(ssl);
     }
 
     public static int SSL_set_fd(IntPtr ssl, int fd) {
-      return Win32Native.SSL_set_fd(ssl, fd);
+      return _fnSslSetFd(ssl, fd);
     }
 
     public static bool SetSniHostname(IntPtr ssl, string hostName) {
-      IntPtr res = Win32Native.SSL_ctrl(ssl, SSL_CTRL_SET_TLSEXT_HOSTNAME, new IntPtr(TLSEXT_NAMETYPE_host_name), hostName);
+      IntPtr res = _fnSslCtrl(ssl, SSL_CTRL_SET_TLSEXT_HOSTNAME, new IntPtr(TLSEXT_NAMETYPE_host_name), hostName);
       return res.ToInt64() != 0;
     }
 
     public static int SSL_connect(IntPtr ssl) {
-      return Win32Native.SSL_connect(ssl);
+      return _fnSslConnect(ssl);
     }
 
     public static int SSL_write(IntPtr ssl, byte[] buf, int num) {
-      return Win32Native.SSL_write(ssl, buf, num);
+      return _fnSslWrite(ssl, buf, num);
     }
 
     public static int SSL_read(IntPtr ssl, byte[] buf, int num) {
-      return Win32Native.SSL_read(ssl, buf, num);
+      return _fnSslRead(ssl, buf, num);
     }
 
     public static int SSL_shutdown(IntPtr ssl) {
-      return Win32Native.SSL_shutdown(ssl);
+      return _fnSslShutdown(ssl);
     }
 
     public static int SSL_get_error(IntPtr ssl, int ret) {
-      return Win32Native.SSL_get_error(ssl, ret);
+      return _fnSslGetError(ssl, ret);
     }
   }
 

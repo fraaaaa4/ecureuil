@@ -460,8 +460,8 @@ namespace Ecureuil
             // 
             // listBox1
             // 
-            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(251, 81);
             this.listBox1.Name = "listBox1";
@@ -480,8 +480,8 @@ namespace Ecureuil
             // 
             // appInstructionParameterList
             // 
-            this.appInstructionParameterList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.appInstructionParameterList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.appInstructionParameterList.FormattingEnabled = true;
             this.appInstructionParameterList.Location = new System.Drawing.Point(12, 81);
             this.appInstructionParameterList.Name = "appInstructionParameterList";
@@ -499,8 +499,8 @@ namespace Ecureuil
             // 
             // appInstallationInstruction
             // 
-            this.appInstallationInstruction.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.appInstallationInstruction.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.appInstallationInstruction.FormattingEnabled = true;
             this.appInstallationInstruction.Location = new System.Drawing.Point(12, 27);
             this.appInstallationInstruction.Name = "appInstallationInstruction";
@@ -509,14 +509,14 @@ namespace Ecureuil
             // 
             // appInstallationLabel1
             // 
-            this.appInstallationLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.appInstallationLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.appInstallationLabel1.Location = new System.Drawing.Point(12, 9);
             this.appInstallationLabel1.Name = "appInstallationLabel1";
             this.appInstallationLabel1.Size = new System.Drawing.Size(456, 15);
             this.appInstallationLabel1.TabIndex = 0;
             this.appInstallationLabel1.Text = "Here are the instruction steps the developer detailed that the user should do upo" +
-                "n downloading:";
+    "n downloading:";
             // 
             // appSourceTab
             // 
@@ -532,9 +532,9 @@ namespace Ecureuil
             // 
             // appSameCategoryList
             // 
-            this.appSameCategoryList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.appSameCategoryList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.appSameCategoryList.Location = new System.Drawing.Point(12, 45);
             this.appSameCategoryList.Name = "appSameCategoryList";
             this.appSameCategoryList.Size = new System.Drawing.Size(456, 76);
@@ -544,8 +544,8 @@ namespace Ecureuil
             // 
             // appSimilarText
             // 
-            this.appSimilarText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.appSimilarText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.appSimilarText.Location = new System.Drawing.Point(12, 26);
             this.appSimilarText.Name = "appSimilarText";
             this.appSimilarText.Size = new System.Drawing.Size(454, 15);
@@ -554,8 +554,8 @@ namespace Ecureuil
             // 
             // appSourceTabText
             // 
-            this.appSourceTabText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.appSourceTabText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.appSourceTabText.Location = new System.Drawing.Point(12, 9);
             this.appSourceTabText.Name = "appSourceTabText";
             this.appSourceTabText.Size = new System.Drawing.Size(454, 15);
@@ -612,8 +612,8 @@ namespace Ecureuil
             this.MinimumSize = new System.Drawing.Size(480, 320);
             this.Name = "ApplicationDetail";
             this.Text = "Detail of an application";
-            this.Resize += new System.EventHandler(this.ApplicationDetail_Resize);
             this.Load += new System.EventHandler(this.ApplicationDetail_Load);
+            this.Resize += new System.EventHandler(this.ApplicationDetail_Resize);
             this.appDetailToolstrip.ResumeLayout(false);
             this.appDetailToolstrip.PerformLayout();
             this.appBanner.ResumeLayout(false);
