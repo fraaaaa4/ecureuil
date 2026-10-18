@@ -37,3 +37,6 @@ This folder contains everything that the app actually does.
 
 ### Compatibility
 Compatibility for each app must be specified by the uploader; you must specify all versions that are supported (e.g. if an app supports both 8.0 and 8.1, you must specify both of them. A method inside automatically verifies your NT version, and checks if it's compatible. Your architecture gets verified too.
+
+## AI usage
+Ecureuil is NOT developed only by AI. I used Antimatter only for bug fixes, OpenSSL helper and code cleanup. These pieces of code were always reviewed by me afterwards.
