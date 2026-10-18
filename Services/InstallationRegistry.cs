@@ -46,10 +46,7 @@ namespace Ecureuil.Core.Services {
     // Salva l'intero registro installazioni su disco
     public void SaveRegistry() {
       try {
-        List<InstallationRecord> records = new List<InstallationRecord>();
-        foreach (KeyValuePair<string, InstallationRecord> kvp in _installedApps) {
-          records.Add(kvp.Value);
-        }
+        List<InstallationRecord> records = new List<InstallationRecord>(_installedApps.Values);
         string json = MiniJson.Serialize(records);
         File.WriteAllText(_registryFilePath, json);
       } catch (Exception ex) {
@@ -73,15 +70,15 @@ namespace Ecureuil.Core.Services {
     public InstallationRecord GetRecord(string appId) {
       if (string.IsNullOrEmpty(appId)) return null;
       InstallationRecord record;
-      if (_installedApps.TryGetValue(appId, out record)) {
-        return record;
-      }
-      return null;
+      return _installedApps.TryGetValue(appId, out record) ? record : null;
     }
 
     public bool IsInstalled(string appId) {
-      if (string.IsNullOrEmpty(appId)) return false;
-      return _installedApps.ContainsKey(appId);
+      return !string.IsNullOrEmpty(appId) && _installedApps.ContainsKey(appId);
+    }
+
+    public List<InstallationRecord> GetAllRecords() {
+      return _installedApps != null ? new List<InstallationRecord>(_installedApps.Values) : new List<InstallationRecord>();
     }
 
     public void ApplyStatusToApps(List<AppModel> apps) {
@@ -95,11 +92,13 @@ namespace Ecureuil.Core.Services {
         if (record != null) {
           app.isInstalled = true;
           app.installedOn = record.InstalledOn;
+          app.installedDate = record.InstalledDate;
           app.installedShortcutPath = record.ShortcutPath;
           app.installDirectory = record.InstallDirectory;
         } else {
           app.isInstalled = false;
           app.installedOn = null;
+          app.installedDate = null;
           app.installedShortcutPath = null;
           app.installDirectory = null;
         }

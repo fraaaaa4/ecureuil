@@ -37,12 +37,13 @@ namespace Ecureuil
             CacheCheckboxLoadCheck();
             LoadInstallationSettings();
             LoadFileTabSettings();
-            if (!changedStuff) ApplyButton.Enabled = false; else ApplyButton.Enabled = true;
-            if (Ecureuil.Properties.Settings.Default.enableCache) enableCacheCheckbox.Checked = true;
-            else enableCacheCheckbox.Checked = false;
+            ApplyButton.Enabled = changedStuff;
+            enableCacheCheckbox.Checked = Settings.Default.enableCache;
 
             sourcesCacheListView.ItemChecked += new ItemCheckedEventHandler(cacheListView_ItemChecked);
             appsCacheListView.ItemChecked += new ItemCheckedEventHandler(cacheListView_ItemChecked);
+
+            numericCaheValid.Value = Settings.Default.maxAge;
         }
 
         private void TextResource()
@@ -51,6 +52,12 @@ namespace Ecureuil
             OKButton.Text = Resources.ok;
             ApplyButton.Text = Resources.apply;
             CancelButton.Text = Resources.cancel;
+            colSourceHeaderName.Text = Resources.name ?? "Name";
+            colSourceHeaderUpdated.Text = Resources.lastUpdated ?? "Last updated";
+            colSourceHeaderSize.Text = Resources.size ?? "Size";
+            colAppHeaderName.Text = Resources.name ?? "Name";
+            colAppHeaderUpdated.Text = Resources.lastUpdated ?? "Last updated";
+            colAppHeaderSize.Text = Resources.size ?? "Size";
         }
 
         private void CancelButton_Click(object sender, EventArgs e)
@@ -144,6 +151,7 @@ namespace Ecureuil
                     FileInfo usf = new FileInfo(userSourcesPath);
                     ListViewItem usItem = new ListViewItem(Resources.userSourcesIndex);
                     usItem.SubItems.Add(usf.LastWriteTime.ToString("dd/MM/yyyy HH:mm"));
+                    usItem.SubItems.Add(sizeFormat.FormattedSize(usf.Length));
                     usItem.ToolTipText = usf.FullName;
                     usItem.Tag = usf;
                     sourcesCacheListView.Items.Add(usItem);
@@ -163,6 +171,7 @@ namespace Ecureuil
 
                         ListViewItem item = new ListViewItem(displayName);
                         item.SubItems.Add(file.LastWriteTime.ToString("dd/MM/yyyy HH:mm"));
+                        item.SubItems.Add(sizeFormat.FormattedSize(file.Length));
                         item.ToolTipText = file.FullName;
                         item.Tag = file;
                         sourcesCacheListView.Items.Add(item);
@@ -176,6 +185,7 @@ namespace Ecureuil
 
                         ListViewItem item = new ListViewItem(displayName);
                         item.SubItems.Add(file.LastWriteTime.ToString("dd/MM/yyyy HH:mm"));
+                        item.SubItems.Add(sizeFormat.FormattedSize(file.Length));
                         item.ToolTipText = file.FullName;
                         item.Tag = file;
                         appsCacheListView.Items.Add(item);
@@ -186,6 +196,7 @@ namespace Ecureuil
                         string displayName = name.Replace(".json", "");
                         ListViewItem item = new ListViewItem(displayName);
                         item.SubItems.Add(file.LastWriteTime.ToString("dd/MM/yyyy HH:mm"));
+                        item.SubItems.Add(sizeFormat.FormattedSize(file.Length));
                         item.ToolTipText = file.FullName;
                         item.Tag = file;
                         sourcesCacheListView.Items.Add(item);
@@ -264,33 +275,24 @@ namespace Ecureuil
             return total;
         }
 
+        private void AddCheckedFiles(ListView list, List<FileInfo> target)
+        {
+            if (list == null || list.Items == null) return;
+            for (int i = 0; i < list.Items.Count; i++)
+            {
+                if (list.Items[i].Checked)
+                {
+                    FileInfo fi = list.Items[i].Tag as FileInfo;
+                    if (fi != null && fi.Exists) target.Add(fi);
+                }
+            }
+        }
+
         private void deleteCacheButton_Click(object sender, EventArgs e)
         {
             List<FileInfo> filesToDelete = new List<FileInfo>();
-
-            if (sourcesCacheListView != null && sourcesCacheListView.Items != null)
-            {
-                for (int i = 0; i < sourcesCacheListView.Items.Count; i++)
-                {
-                    if (sourcesCacheListView.Items[i].Checked)
-                    {
-                        FileInfo fi = sourcesCacheListView.Items[i].Tag as FileInfo;
-                        if (fi != null && fi.Exists) filesToDelete.Add(fi);
-                    }
-                }
-            }
-
-            if (appsCacheListView != null && appsCacheListView.Items != null)
-            {
-                for (int i = 0; i < appsCacheListView.Items.Count; i++)
-                {
-                    if (appsCacheListView.Items[i].Checked)
-                    {
-                        FileInfo fi = appsCacheListView.Items[i].Tag as FileInfo;
-                        if (fi != null && fi.Exists) filesToDelete.Add(fi);
-                    }
-                }
-            }
+            AddCheckedFiles(sourcesCacheListView, filesToDelete);
+            AddCheckedFiles(appsCacheListView, filesToDelete);
 
             if (filesToDelete.Count == 0)
             {
@@ -512,27 +514,26 @@ namespace Ecureuil
             ApplyButton.Enabled = true;
         }
 
+        private void SetCacheControlsEnabled(bool enabled)
+        {
+            sourcesCacheListView.Enabled = enabled;
+            appsCacheListView.Enabled = enabled;
+            refreshCacheButton.Enabled = enabled;
+            deleteCacheButton.Enabled = enabled;
+        }
+
         private void CacheCheckboxCheck()
         {
-            Ecureuil.Properties.Settings.Default.enableCache = enableCacheCheckbox.Checked;
-            Ecureuil.Properties.Settings.Default.Save();
-
-            sourcesCacheListView.Enabled = enableCacheCheckbox.Checked;
-            appsCacheListView.Enabled = enableCacheCheckbox.Checked;
-            refreshCacheButton.Enabled = enableCacheCheckbox.Checked;
-            deleteCacheButton.Enabled = enableCacheCheckbox.Checked;
-
+            Settings.Default.enableCache = enableCacheCheckbox.Checked;
+            Settings.Default.Save();
+            SetCacheControlsEnabled(enableCacheCheckbox.Checked);
             settingsSaved = false;
         }
 
         private void CacheCheckboxLoadCheck()
         {
-            enableCacheCheckbox.Checked = Ecureuil.Properties.Settings.Default.enableCache;
-
-            sourcesCacheListView.Enabled = enableCacheCheckbox.Checked;
-            appsCacheListView.Enabled = enableCacheCheckbox.Checked;
-            refreshCacheButton.Enabled = enableCacheCheckbox.Checked;
-            deleteCacheButton.Enabled = enableCacheCheckbox.Checked;
+            enableCacheCheckbox.Checked = Settings.Default.enableCache;
+            SetCacheControlsEnabled(enableCacheCheckbox.Checked);
         }
 
         private bool isLoadingSettings = false;
@@ -832,5 +833,22 @@ namespace Ecureuil
         }
 
         #endregion
+
+        private void selectAllButton_Click(object sender, EventArgs e)
+        {
+            ListView targetList = cacheInnerTabControl.SelectedIndex == 0 ? sourcesCacheListView : appsCacheListView;
+            if (targetList != null && targetList.Items != null)
+            {
+                for (int i = 0; i < targetList.Items.Count; i++)
+                {
+                    targetList.Items[i].Checked = true;
+                }
+            }
+        }
+
+        private void numericCaheValid_ValueChanged(object sender, EventArgs e)
+        {
+            Settings.Default.maxAge = (int)numericCaheValid.Value; Settings.Default.Save();
+        }
     }
 }

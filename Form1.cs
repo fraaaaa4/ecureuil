@@ -116,10 +116,71 @@ namespace Ecureuil
 
                 if (_installationRegistry != null && _loadedApps != null)
                 {
+                    LoadOrphanInstalledApps();
                     _installationRegistry.ApplyStatusToApps(_loadedApps);
                 }
             }
             catch { }
+        }
+
+        private void LoadOrphanInstalledApps()
+        {
+            if (_installationRegistry == null) return;
+            List<InstallationRecord> records = _installationRegistry.GetAllRecords();
+            if (records == null || records.Count == 0) return;
+
+            if (_loadedApps == null) _loadedApps = new List<AppModel>();
+
+            for (int r = 0; r < records.Count; r++)
+            {
+                InstallationRecord rec = records[r];
+                if (rec == null || string.IsNullOrEmpty(rec.AppId)) continue;
+
+                bool exists = false;
+                for (int a = 0; a < _loadedApps.Count; a++)
+                {
+                    if (_loadedApps[a] != null && string.Compare(_loadedApps[a].id, rec.AppId, true) == 0)
+                    {
+                        exists = true;
+                        break;
+                    }
+                }
+
+                if (!exists)
+                {
+                    AppModel cachedApp = null;
+                    if (_cacheManager != null)
+                    {
+                        try
+                        {
+                            string json = _cacheManager.LoadAppCache(rec.AppId);
+                            if (!string.IsNullOrEmpty(json))
+                            {
+                                cachedApp = MiniJson.Deserialize<AppModel>(json);
+                            }
+                        }
+                        catch { }
+                    }
+
+                    if (cachedApp == null)
+                    {
+                        cachedApp = new AppModel();
+                        cachedApp.id = rec.AppId;
+                        cachedApp.name = rec.AppId;
+                        cachedApp.version = rec.InstalledVersion;
+                        cachedApp.source = rec.SourceId;
+                        cachedApp.fileType = rec.FileType;
+                    }
+
+                    cachedApp.isInstalled = true;
+                    cachedApp.installedOn = rec.InstalledOn;
+                    cachedApp.installedDate = rec.InstalledDate;
+                    cachedApp.installedShortcutPath = rec.ShortcutPath;
+                    cachedApp.installDirectory = rec.InstallDirectory;
+
+                    _loadedApps.Add(cachedApp);
+                }
+            }
         }
 
         // save the sources installed to the cache or Settings
@@ -183,7 +244,9 @@ namespace Ecureuil
             discoverLink.Text = Resources.discoverSources;
             refreshButton.Text = Resources.refresh;
             refreshContextMenu.Items[0].Text = Resources.refreshOnly;
+            refreshContextMenu.Items[0].Click += new EventHandler(refreshSelected_Click);
             refreshContextMenu.Items[1].Text = Resources.refreshAll;
+            refreshContextMenu.Items[1].Click += new EventHandler(refreshAll_Click);
 
             addSourceContextText.Text = Resources.addSourceURL;
             discoverSourcesToolStripMenuItem.Text = Resources.discoverSources;
@@ -287,6 +350,16 @@ namespace Ecureuil
             OpenImageHelper.SetTruncatedText(sourceAuthor, authorText, leftAvailableWidth);
         }
 
+        private static Image BytesToScaledImage(byte[] data, int width, int height)
+        {
+            if (data == null || data.Length == 0) return null;
+            using (MemoryStream ms = new MemoryStream(data))
+            using (Image img = Image.FromStream(ms))
+            {
+                return OpenImageHelper.CreateScaledBitmap(img, width, height);
+            }
+        }
+
         // Download/cache an image and return a scaled bitmap
         private Image LoadScaledIcon(string iconUrl, string cacheKey, int width, int height)
         {
@@ -300,37 +373,24 @@ namespace Ecureuil
                 {
                     try
                     {
-                        using (MemoryStream ms = new MemoryStream(iconData))
-                        using (Image img = Image.FromStream(ms))
-                        {
-                            result = OpenImageHelper.CreateScaledBitmap(img, width, height);
-                        }
+                        result = BytesToScaledImage(iconData, width, height);
                     }
                     catch
                     {
-                        // cache was corrupted or not a valid image, purge it
                         if (_cacheManager != null && !string.IsNullOrEmpty(cacheKey))
                         {
                             _cacheManager.DeleteImageCache(cacheKey);
                         }
-                        iconData = null;
-                        result = null;
                     }
                 }
 
                 if (result == null)
                 {
-                    // download it instead of trying to get it from the cache
                     iconData = _downloadService.DownloadData(iconUrl);
                     if (iconData != null && iconData.Length > 0)
                     {
-                        using (MemoryStream ms = new MemoryStream(iconData))
-                        using (Image img = Image.FromStream(ms))
-                        {
-                            result = OpenImageHelper.CreateScaledBitmap(img, width, height);
-                        }
-
-                        if (_cacheManager != null && !string.IsNullOrEmpty(cacheKey))
+                        result = BytesToScaledImage(iconData, width, height);
+                        if (result != null && _cacheManager != null && !string.IsNullOrEmpty(cacheKey))
                         {
                             _cacheManager.SaveImageCache(cacheKey, iconData);
                         }
@@ -352,7 +412,7 @@ namespace Ecureuil
                 string cacheKey = !string.IsNullOrEmpty(sm.id) ? sm.id : sm.name;
                 string indexJson = null;
 
-                if (!forceDownload && _cacheManager != null && _cacheManager.isSourceCacheValid(cacheKey, TimeSpan.FromHours(24)))
+                if (!forceDownload && _cacheManager != null && _cacheManager.isSourceCacheValid(cacheKey, TimeSpan.FromHours(Settings.Default.maxAge)))
                 {
                     indexJson = _cacheManager.LoadSourceCatalogCache(cacheKey);
                 }
@@ -434,71 +494,48 @@ namespace Ecureuil
                     }
 
                     List<SourceModel> sources = _catalogManager.ParseSourcesJson(jsonContent);
+                    bool hasValidSources = false;
                     if (sources != null && sources.Count > 0)
+                    {
+                        for (int i = 0; i < sources.Count; i++)
+                        {
+                            if (sources[i] != null && !string.IsNullOrEmpty(sources[i].url))
+                            {
+                                hasValidSources = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (hasValidSources)
                     {
                         if (_loadedSources == null) _loadedSources = new List<SourceModel>();
                         if (_loadedApps == null) _loadedApps = new List<AppModel>();
 
                         for (int i = 0; i < sources.Count; i++)
                         {
-                            SourceModel sm = sources[i];
-                            if (sm == null) continue;
-
-                            bool found = false;
-                            for (int j = 0; j < _loadedSources.Count; j++)
-                            {
-                                if (string.Compare(_loadedSources[j].id, sm.id, true) == 0)
-                                {
-                                    _loadedSources[j] = sm;
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found)
-                            {
-                                _loadedSources.Add(sm);
-                            }
-
-                            LoadAndCacheSourceApps(sm, true);
+                            MergeSourceModel(sources[i], true);
                         }
 
-                        if (this.IsHandleCreated && !this.IsDisposed)
-                        {
-                            this.BeginInvoke(new MethodInvoker(delegate
-                            {
-                                if (_installationRegistry != null && _loadedApps != null)
-                                {
-                                    _installationRegistry.ApplyStatusToApps(_loadedApps);
-                                }
-                                SaveInstalledSourcesToSettings();
-                                PopulateNavigationTree();
-                                PopulateInstalledSourcesList();
-                                DisplayApps(_loadedApps, _showGroupsInApplications);
-                                this.Cursor = Cursors.Default;
-                            }));
-                        }
+                        CommitLoadedSourcesAndRefreshUI();
                     }
                     else
                     {
-                        if (this.IsHandleCreated && !this.IsDisposed)
+                        List<AppModel> apps = _catalogManager.ParseIndexJson(jsonContent);
+                        if (apps != null && apps.Count > 0)
                         {
-                            this.BeginInvoke(new MethodInvoker(delegate
-                            {
-                                this.Cursor = Cursors.Default;
-                            }));
+                            LoadSourceIndex(sourcesUrl);
+                        }
+                        else
+                        {
+                            ResetCursorDefaultSafe();
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    if (this.IsHandleCreated && !this.IsDisposed)
-                    {
-                        this.BeginInvoke(new MethodInvoker(delegate
-                        {
-                            this.Cursor = Cursors.Default;
-                            Console.WriteLine(Resources.error + ex.Message);
-                        }));
-                    }
+                    ResetCursorDefaultSafe();
+                    Console.WriteLine(Resources.error + ex.Message);
                 }
             });
         }
@@ -514,52 +551,84 @@ namespace Ecureuil
                     if (_loadedSources == null) _loadedSources = new List<SourceModel>();
                     if (_loadedApps == null) _loadedApps = new List<AppModel>();
 
-                    bool found = false;
-                    for (int j = 0; j < _loadedSources.Count; j++)
-                    {
-                        if (string.Compare(_loadedSources[j].id, sm.id, true) == 0 ||
-                            string.Compare(_loadedSources[j].url, sm.url, true) == 0)
-                        {
-                            _loadedSources[j] = sm;
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found)
-                    {
-                        _loadedSources.Add(sm);
-                    }
-
-                    LoadAndCacheSourceApps(sm, true);
-
-                    if (this.IsHandleCreated && !this.IsDisposed)
-                    {
-                        this.BeginInvoke(new MethodInvoker(delegate
-                        {
-                            if (_installationRegistry != null && _loadedApps != null)
-                            {
-                                _installationRegistry.ApplyStatusToApps(_loadedApps);
-                            }
-                            SaveInstalledSourcesToSettings();
-                            PopulateNavigationTree();
-                            PopulateInstalledSourcesList();
-                            DisplayApps(_loadedApps, _showGroupsInApplications);
-                            this.Cursor = Cursors.Default;
-                        }));
-                    }
+                    MergeSourceModel(sm, true);
+                    CommitLoadedSourcesAndRefreshUI();
                 }
                 catch (Exception ex)
                 {
-                    if (this.IsHandleCreated && !this.IsDisposed)
-                    {
-                        this.BeginInvoke(new MethodInvoker(delegate
-                        {
-                            this.Cursor = Cursors.Default;
-                            Console.WriteLine(Resources.error + ex.Message);
-                        }));
-                    }
+                    ResetCursorDefaultSafe();
+                    Console.WriteLine(Resources.error + ex.Message);
                 }
             });
+        }
+
+        private void MergeSourceModel(SourceModel sm, bool loadApps)
+        {
+            if (sm == null) return;
+            bool found = false;
+            for (int j = 0; j < _loadedSources.Count; j++)
+            {
+                SourceModel existing = _loadedSources[j];
+                if (existing == null) continue;
+
+                bool idMatch = !string.IsNullOrEmpty(sm.id) && !string.IsNullOrEmpty(existing.id) &&
+                               string.Compare(existing.id, sm.id, true) == 0;
+
+                bool nameMatch = string.IsNullOrEmpty(sm.id) && string.IsNullOrEmpty(existing.id) &&
+                                 !string.IsNullOrEmpty(sm.name) && !string.IsNullOrEmpty(existing.name) &&
+                                 string.Compare(existing.name, sm.name, true) == 0;
+
+                bool urlMatch = string.IsNullOrEmpty(sm.id) && string.IsNullOrEmpty(existing.id) &&
+                                string.IsNullOrEmpty(sm.name) && string.IsNullOrEmpty(existing.name) &&
+                                !string.IsNullOrEmpty(sm.url) && !string.IsNullOrEmpty(existing.url) &&
+                                string.Compare(existing.url, sm.url, true) == 0;
+
+                if (idMatch || nameMatch || urlMatch)
+                {
+                    _loadedSources[j] = sm;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                _loadedSources.Add(sm);
+            }
+
+            if (loadApps)
+            {
+                LoadAndCacheSourceApps(sm, true);
+            }
+        }
+
+        private void CommitLoadedSourcesAndRefreshUI()
+        {
+            if (this.IsHandleCreated && !this.IsDisposed)
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    if (_installationRegistry != null && _loadedApps != null)
+                    {
+                        _installationRegistry.ApplyStatusToApps(_loadedApps);
+                    }
+                    SaveInstalledSourcesToSettings();
+                    PopulateNavigationTree();
+                    PopulateInstalledSourcesList();
+                    DisplayApps(_loadedApps, _showGroupsInApplications);
+                    this.Cursor = Cursors.Default;
+                }));
+            }
+        }
+
+        private void ResetCursorDefaultSafe()
+        {
+            if (this.IsHandleCreated && !this.IsDisposed)
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    this.Cursor = Cursors.Default;
+                }));
+            }
         }
 
         // add source text; add source when clicking down the Enter key
@@ -584,13 +653,7 @@ namespace Ecureuil
                     string jsonContent = _downloadService.DownloadString(url);
                     if (string.IsNullOrEmpty(jsonContent))
                     {
-                        if (this.IsHandleCreated && !this.IsDisposed)
-                        {
-                            this.BeginInvoke(new MethodInvoker(delegate
-                            {
-                                this.Cursor = Cursors.Default;
-                            }));
-                        }
+                        ResetCursorDefaultSafe();
                         return;
                     }
                     List<sourceDiscoverModel> newDiscover = _catalogManager.ParseDiscoveryJson(jsonContent);
@@ -677,6 +740,12 @@ namespace Ecureuil
         private void DisplayDiscoveredSources(List<sourceDiscoverModel> discovered)
         {
             _isViewingDiscovered = true;
+            if (txtUpdatesStatus != null) txtUpdatesStatus.Visible = false;
+            if (categoryItemView != null)
+            {
+                categoryItemView.Visible = true;
+                categoryItemView.BringToFront();
+            }
             categoryItemView.BeginUpdate();
             categoryItemView.Items.Clear();
             categoryItemView.Groups.Clear();
@@ -800,7 +869,8 @@ namespace Ecureuil
                 SourceModel matchedSource = null;
                 for (int s = 0; s < _loadedSources.Count; s++)
                 {
-                    if (MatchesSource(_loadedSources[s], url) || MatchesSource(_loadedSources[s], discoveredSourceId))
+                    if ((!string.IsNullOrEmpty(discoveredSourceId) && MatchesSource(_loadedSources[s], discoveredSourceId)) ||
+                        (string.IsNullOrEmpty(discoveredSourceId) && MatchesSource(_loadedSources[s], url)))
                     {
                         matchedSource = _loadedSources[s];
                         break;
@@ -867,18 +937,18 @@ namespace Ecureuil
         private bool MatchesSource(SourceModel sm, string key)
         {
             if (sm == null || string.IsNullOrEmpty(key)) return false;
-            return string.Compare(sm.id, key, true) == 0 ||
-                   string.Compare(sm.name, key, true) == 0 ||
-                   string.Compare(sm.url, key, true) == 0 ||
-                   string.Compare(sm.originalURL, key, true) == 0;
+            return (!string.IsNullOrEmpty(sm.id) && string.Compare(sm.id, key, true) == 0) ||
+                   (!string.IsNullOrEmpty(sm.name) && string.Compare(sm.name, key, true) == 0) ||
+                   (!string.IsNullOrEmpty(sm.url) && string.Compare(sm.url, key, true) == 0) ||
+                   (!string.IsNullOrEmpty(sm.originalURL) && string.Compare(sm.originalURL, key, true) == 0);
         }
 
-        // helper to check if an app belongs to an enabled source
+        // helper to check if an app belongs to an enabled and added source
         private bool IsAppEnabled(AppModel app)
         {
             if (app == null) return false;
-            if (string.IsNullOrEmpty(app.source)) return true;
-            if (_loadedSources == null || _loadedSources.Count == 0) return true;
+            if (string.IsNullOrEmpty(app.source)) return false;
+            if (_loadedSources == null || _loadedSources.Count == 0) return false;
 
             for (int s = 0; s < _loadedSources.Count; s++)
             {
@@ -887,7 +957,7 @@ namespace Ecureuil
                     return _loadedSources[s].isEnabled;
                 }
             }
-            return true;
+            return false;
         }
 
         // Populates the left navigation tree with root nodes, dynamic categories, and dynamic sources from index
@@ -967,37 +1037,15 @@ namespace Ecureuil
                 {
                     SourceModel sm = _loadedSources[s];
                     if (sm == null) continue;
-                    string displayName = !string.IsNullOrEmpty(sm.name) ? sm.name : (!string.IsNullOrEmpty(sm.id) ? sm.id : "Source");
-                    string key = !string.IsNullOrEmpty(sm.id) ? sm.id : displayName;
-                    if (!addedSourceKeys.ContainsKey(key) && !addedSourceKeys.ContainsKey(displayName))
+                    string key = !string.IsNullOrEmpty(sm.id) ? sm.id : (!string.IsNullOrEmpty(sm.name) ? sm.name : s.ToString());
+                    if (!addedSourceKeys.ContainsKey(key))
                     {
+                        string displayName = !string.IsNullOrEmpty(sm.name) ? sm.name : (!string.IsNullOrEmpty(sm.id) ? sm.id : "Source " + (s + 1));
                         TreeNode srcNode = new TreeNode(displayName);
                         srcNode.Name = Resources.source2 + "_" + key;
                         srcNode.Tag = key;
                         sourcesNode.Nodes.Add(srcNode);
                         addedSourceKeys[key] = true;
-                        addedSourceKeys[displayName] = true;
-                    }
-                }
-            }
-
-            if (_loadedApps != null)
-            {
-                for (int a = 0; a < _loadedApps.Count; a++)
-                {
-                    AppModel app = _loadedApps[a];
-                    if (app == null || string.IsNullOrEmpty(app.source)) continue;
-                    string sName = app.source;
-                    if (!addedSourceKeys.ContainsKey(sName))
-                    {
-                        SourceModel sm = FindSourceModel(sName);
-                        string displayName = (sm != null && !string.IsNullOrEmpty(sm.name)) ? sm.name : sName;
-                        TreeNode srcNode = new TreeNode(displayName);
-                        srcNode.Name = Resources.source2 + "_" + sName;
-                        srcNode.Tag = sName;
-                        sourcesNode.Nodes.Add(srcNode);
-                        addedSourceKeys[sName] = true;
-                        addedSourceKeys[displayName] = true;
                     }
                 }
             }
@@ -1007,51 +1055,24 @@ namespace Ecureuil
             installedNode.Name = Resources.installedNode;
             installedNode.Tag = Resources.installedNode;
 
+            //4. Installed Node: Updates
+            TreeNode updateNode = new TreeNode(Resources.updates ?? "Updates");
+            updateNode.Name = Resources.updates; updateNode.Tag = Resources.updates;
+            installedNode.Nodes.Add(updateNode);
+
             categoryNavigationView.Nodes.Add(appsNode);
             categoryNavigationView.Nodes.Add(sourcesNode);
             categoryNavigationView.Nodes.Add(installedNode);
 
             appsNode.Expand();
             sourcesNode.Expand();
-
-            TreeNode nodeToSelect = null;
-            if (!string.IsNullOrEmpty(selectedName))
-            {
-                TreeNode[] matches = categoryNavigationView.Nodes.Find(selectedName, true);
-                if (matches != null && matches.Length > 0)
-                {
-                    nodeToSelect = matches[0];
-                }
-            }
-            if (nodeToSelect == null && !string.IsNullOrEmpty(selectedTag))
-            {
-                for (int i = 0; i < appsNode.Nodes.Count; i++)
-                {
-                    if (string.Compare(appsNode.Nodes[i].Tag as string, selectedTag, true) == 0)
-                    {
-                        nodeToSelect = appsNode.Nodes[i];
-                        break;
-                    }
-                }
-                if (nodeToSelect == null)
-                {
-                    for (int i = 0; i < sourcesNode.Nodes.Count; i++)
-                    {
-                        if (string.Compare(sourcesNode.Nodes[i].Tag as string, selectedTag, true) == 0)
-                        {
-                            nodeToSelect = sourcesNode.Nodes[i];
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (nodeToSelect != null)
-            {
-                categoryNavigationView.SelectedNode = nodeToSelect;
-            }
-
+            installedNode.Expand();
             categoryNavigationView.EndUpdate();
+
+            if (categoryNavigationView.SelectedNode == null && categoryNavigationView.Nodes.Count > 0)
+            {
+                categoryNavigationView.SelectedNode = categoryNavigationView.Nodes[0];
+            }
         }
 
         // Renders the list of apps inside categoryItemView with optional category grouping, rich details and downloads icons
@@ -1065,6 +1086,12 @@ namespace Ecureuil
             _isViewingDiscovered = false;
             _currentBaseApps = apps;
             _currentFilterDisabledSources = filterDisabledSources;
+            if (txtUpdatesStatus != null) txtUpdatesStatus.Visible = false;
+            if (categoryItemView != null)
+            {
+                categoryItemView.Visible = true;
+                categoryItemView.BringToFront();
+            }
             ApplyCurrentViewFilterAndDisplay();
         }
 
@@ -1391,6 +1418,13 @@ namespace Ecureuil
             sourceIcon.Image = null;
             discoverSources.Visible = false;
             sourcesPanel.Visible = false;
+            if (updateAllButton != null) updateAllButton.Visible = false;
+            if (txtUpdatesStatus != null) txtUpdatesStatus.Visible = false;
+            if (categoryItemView != null)
+            {
+                categoryItemView.Visible = true;
+                categoryItemView.BringToFront();
+            }
         }
 
         // populates source details banner and loads source icon
@@ -1467,14 +1501,23 @@ namespace Ecureuil
             string tagStr = (e.Node.Tag as string) ?? "";
             string nodeText = (e.Node.Text ?? "").Trim();
 
+            bool isSourcesRoot = string.Compare(nodeName, Resources.sourcesNode, true) == 0 ||
+                                 string.Compare(tagStr, Resources.sourcesNode, true) == 0 ||
+                                 string.Compare(nodeText, Resources.source4, true) == 0 ||
+                                 string.Compare(nodeText, Resources.secondCategoryNode, true) == 0 ||
+                                 string.Compare(nodeName, "sources", true) == 0 ||
+                                 string.Compare(tagStr, "sources", true) == 0 ||
+                                 string.Compare(nodeText, "Sources", true) == 0;
+
+            UpdateControlsAvailabilityForCurrentView(isSourcesRoot);
+            HideSourcePanel();
+
             // applications root (All apps)
             if (string.Compare(nodeName, Resources.all_apps, true) == 0 ||
                 string.Compare(nodeName, Resources.applications, true) == 0 ||
                 string.Compare(tagStr, Resources.all_apps, true) == 0 ||
                 string.Compare(nodeText, Resources.ApplicationsText, true) == 0)
             {
-                UpdateControlsAvailabilityForCurrentView(false);
-                HideSourcePanel();
                 categoryItemView.BringToFront();
                 DisplayApps(_loadedApps, _showGroupsInApplications);
                 return;
@@ -1485,28 +1528,29 @@ namespace Ecureuil
                 string.Compare(tagStr, Resources.discoverNode, true) == 0 ||
                 string.Compare(nodeText, Resources.discoverSources, true) == 0)
             {
-                UpdateControlsAvailabilityForCurrentView(false);
-                HideSourcePanel();
+                discoverSourcesText1.Text = Resources.discoverSources ?? "Discover sources";
                 discoverSources.Visible = true;
                 discoverSources.SendToBack();
                 categoryItemView.BringToFront();
-                string discoveryUrl = Resources.discoveryURL;
-                LoadDiscoveredSources(discoveryUrl);
+                LoadDiscoveredSources(Resources.discoveryURL);
                 return;
             }
 
             // sources root node
-            if (string.Compare(nodeName, Resources.sourcesNode, true) == 0 ||
-                string.Compare(tagStr, Resources.sourcesNode, true) == 0 ||
-                string.Compare(nodeText, Resources.source4, true) == 0)
+            if (isSourcesRoot)
             {
-                UpdateControlsAvailabilityForCurrentView(true);
-                HideSourcePanel();
+                categoryItemView.Visible = false;
                 sourcesPanel.Visible = true;
                 sourcesPanel.Dock = DockStyle.Fill;
                 sourcesPanel.BringToFront();
                 PopulateInstalledSourcesList();
-                DisplayApps(new List<AppModel>(), false);
+                return;
+            }
+
+            // updates sub-node under Installed components
+            if (IsUpdatesNode(e.Node))
+            {
+                ShowUpdatesView();
                 return;
             }
 
@@ -1515,28 +1559,13 @@ namespace Ecureuil
                 string.Compare(tagStr, Resources.installedNode, true) == 0 ||
                 string.Compare(nodeText, Resources.thirdCategoryNode, true) == 0)
             {
-                UpdateControlsAvailabilityForCurrentView(false);
-                HideSourcePanel();
-                List<AppModel> installed = new List<AppModel>();
-                if (_loadedApps != null)
-                {
-                    for (int i = 0; i < _loadedApps.Count; i++)
-                    {
-                        if (_loadedApps[i] != null && _loadedApps[i].isInstalled && IsAppEnabled(_loadedApps[i]))
-                        {
-                            installed.Add(_loadedApps[i]);
-                        }
-                    }
-                }
-                DisplayApps(installed, false);
+                DisplayApps(GetInstalledApps(), false, false);
                 return;
             }
 
             // category filter sub-node under Applications
             if (nodeName.StartsWith(Resources.categoryNode + "_") || (!string.IsNullOrEmpty(tagStr) && e.Node.Parent != null && string.Compare(e.Node.Parent.Name, Resources.all_apps, true) == 0))
             {
-                UpdateControlsAvailabilityForCurrentView(false);
-                HideSourcePanel();
                 string categoryToFilter = !string.IsNullOrEmpty(tagStr) ? tagStr : nodeName.Substring(4);
                 List<AppModel> filtered = new List<AppModel>();
                 if (_loadedApps != null)
@@ -1564,10 +1593,8 @@ namespace Ecureuil
             // specific Source sub-node under Sources
             if (nodeName.StartsWith(Resources.source2 + "_") || (e.Node.Parent != null && string.Compare(e.Node.Parent.Name, Resources.sourcesNode, true) == 0))
             {
-                UpdateControlsAvailabilityForCurrentView(false);
                 string sourceId = !string.IsNullOrEmpty(tagStr) ? tagStr : (nodeName.StartsWith(Resources.source2 + "_") ? nodeName.Substring(7) : nodeText);
 
-                HideSourcePanel();
                 SourceModel foundSource = FindSourceModel(sourceId);
                 sourceLoad(foundSource);
 
@@ -1579,8 +1606,8 @@ namespace Ecureuil
                         AppModel app = _loadedApps[i];
                         if (app != null &&
                             (string.Compare(app.source, sourceId, true) == 0 ||
-                             (foundSource.id != null && string.Compare(app.source, foundSource.id, true) == 0) ||
-                             (foundSource.name != null && string.Compare(app.source, foundSource.name, true) == 0)))
+                             (foundSource != null && foundSource.id != null && string.Compare(app.source, foundSource.id, true) == 0) ||
+                             (foundSource != null && foundSource.name != null && string.Compare(app.source, foundSource.name, true) == 0)))
                         {
                             filtered.Add(app);
                         }
@@ -1595,8 +1622,6 @@ namespace Ecureuil
             }
 
             // default fallback: clear view
-            UpdateControlsAvailabilityForCurrentView(false);
-            HideSourcePanel();
             DisplayApps(new List<AppModel>(), false);
         }
 
@@ -1648,7 +1673,7 @@ namespace Ecureuil
 
         private void txtSearch_Enter(object sender, EventArgs e)
         {
-            if (_isSearchPlaceholder || string.Compare(txtSearch.Text, Resources.searchPlaceholder, true) == 0 || string.Compare(txtSearch.Text, Resources.searchPlaceholder, true) == 0)
+            if (_isSearchPlaceholder || string.Compare(txtSearch.Text, Resources.searchPlaceholder, true) == 0 || string.Compare(txtSearch.Text, "Search...", true) == 0)
             {
                 _isSearchPlaceholder = false;
                 txtSearch.Text = "";
@@ -1668,11 +1693,7 @@ namespace Ecureuil
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            if (!_isSearchPlaceholder && string.Compare(txtSearch.Text, Resources.searchPlaceholder, true) != 0 && string.Compare(txtSearch.Text, "Search...", true) != 0)
-            {
-                ApplyCurrentViewFilterAndDisplay();
-            }
-            else if (string.IsNullOrEmpty(txtSearch.Text))
+            if (!_isSearchPlaceholder || string.IsNullOrEmpty(txtSearch.Text))
             {
                 ApplyCurrentViewFilterAndDisplay();
             }
@@ -1706,8 +1727,8 @@ namespace Ecureuil
                         for (int s = 0; s < _loadedSources.Count; s++)
                         {
                             if (_loadedSources[s] != null &&
-                                (string.Compare(_loadedSources[s].id, sm.id, true) == 0 ||
-                                 string.Compare(_loadedSources[s].name, sm.name, true) == 0))
+                                ((!string.IsNullOrEmpty(sm.id) && !string.IsNullOrEmpty(_loadedSources[s].id) && string.Compare(_loadedSources[s].id, sm.id, true) == 0) ||
+                                 (!string.IsNullOrEmpty(sm.name) && !string.IsNullOrEmpty(_loadedSources[s].name) && string.Compare(_loadedSources[s].name, sm.name, true) == 0)))
                             {
                                 isAdded = true;
                                 break;
@@ -1771,6 +1792,13 @@ namespace Ecureuil
                     {
                         this.Cursor = Cursors.Default;
                     };
+                    appDetail.FormClosed += delegate
+                    {
+                        if (IsUpdatesViewActive())
+                        {
+                            ShowUpdatesView();
+                        }
+                    };
                     appDetail.Show();
                 }
             }
@@ -1801,8 +1829,8 @@ namespace Ecureuil
                     for (int s = 0; s < _loadedSources.Count; s++)
                     {
                         if (_loadedSources[s] != null &&
-                            (string.Compare(_loadedSources[s].id, disc.id, true) == 0 ||
-                             string.Compare(_loadedSources[s].name, disc.name, true) == 0))
+                            ((!string.IsNullOrEmpty(disc.id) && !string.IsNullOrEmpty(_loadedSources[s].id) && string.Compare(_loadedSources[s].id, disc.id, true) == 0) ||
+                             (!string.IsNullOrEmpty(disc.name) && !string.IsNullOrEmpty(_loadedSources[s].name) && string.Compare(_loadedSources[s].name, disc.name, true) == 0)))
                         {
                             isAdded = true;
                             break;
@@ -2013,6 +2041,12 @@ namespace Ecureuil
 
         private void RefreshCurrentView()
         {
+            if (IsUpdatesViewActive())
+            {
+                CheckForUpdatesNow();
+                return;
+            }
+
             if (categoryNavigationView.SelectedNode != null)
             {
                 categoryNavigationView_AfterSelect(categoryNavigationView, new TreeViewEventArgs(categoryNavigationView.SelectedNode));
@@ -2076,38 +2110,19 @@ namespace Ecureuil
             installedSources.BeginUpdate();
             installedSources.Items.Clear();
 
-            Dictionary<string, bool> addedNames = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, bool> addedKeys = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
             if (_loadedSources != null)
             {
                 for (int s = 0; s < _loadedSources.Count; s++)
                 {
                     SourceModel sm = _loadedSources[s];
                     if (sm == null) continue;
-                    string name = !string.IsNullOrEmpty(sm.name) ? sm.name : sm.id;
-                    if (!string.IsNullOrEmpty(name) && !addedNames.ContainsKey(name))
+                    string key = !string.IsNullOrEmpty(sm.id) ? sm.id : (!string.IsNullOrEmpty(sm.name) ? sm.name : s.ToString());
+                    string name = !string.IsNullOrEmpty(sm.name) ? sm.name : (!string.IsNullOrEmpty(sm.id) ? sm.id : "Source " + (s + 1));
+                    if (!addedKeys.ContainsKey(key))
                     {
                         installedSources.Items.Add(name);
-                        addedNames[name] = true;
-                    }
-                }
-            }
-
-            if (_loadedApps != null)
-            {
-                for (int a = 0; a < _loadedApps.Count; a++)
-                {
-                    AppModel app = _loadedApps[a];
-                    if (app == null || string.IsNullOrEmpty(app.source)) continue;
-                    if (!addedNames.ContainsKey(app.source))
-                    {
-                        SourceModel sm = FindSourceModel(app.source);
-                        string name = (sm != null && !string.IsNullOrEmpty(sm.name)) ? sm.name : app.source;
-                        if (!addedNames.ContainsKey(name))
-                        {
-                            installedSources.Items.Add(name);
-                            addedNames[name] = true;
-                            addedNames[app.source] = true;
-                        }
+                        addedKeys[key] = true;
                     }
                 }
             }
@@ -2117,6 +2132,50 @@ namespace Ecureuil
             deleteSource.Enabled = hasSelection;
             propertiesSources.Enabled = hasSelection;
             refreshSelected.Enabled = hasSelection;
+        }
+
+        private void refreshSelected_Click(object sender, EventArgs e)
+        {
+            if (installedSources.SelectedItem == null) return;
+            string selName = installedSources.SelectedItem.ToString();
+            SourceModel sm = FindSourceModel(selName);
+            if (sm == null || string.IsNullOrEmpty(sm.url)) return;
+
+            this.Cursor = Cursors.WaitCursor;
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                try
+                {
+                    LoadAndCacheSourceApps(sm, true);
+                    CommitLoadedSourcesAndRefreshUI();
+                }
+                catch
+                {
+                    ResetCursorDefaultSafe();
+                }
+            });
+        }
+
+        private void refreshAll_Click(object sender, EventArgs e)
+        {
+            if (_loadedSources == null || _loadedSources.Count == 0) return;
+
+            this.Cursor = Cursors.WaitCursor;
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                try
+                {
+                    for (int i = 0; i < _loadedSources.Count; i++)
+                    {
+                        LoadAndCacheSourceApps(_loadedSources[i], true);
+                    }
+                    CommitLoadedSourcesAndRefreshUI();
+                }
+                catch
+                {
+                    ResetCursorDefaultSafe();
+                }
+            });
         }
 
         private void propertiesSources_Click(object sender, EventArgs e)
@@ -2144,17 +2203,6 @@ namespace Ecureuil
             SourcesDetails sd = new SourcesDetails(sm, icon, _loadedApps, _downloadService, true, _cacheManager);
             EventHandler onEnabledChanged = delegate
             {
-                if (_loadedSources != null && sm != null)
-                {
-                    for (int s = 0; s < _loadedSources.Count; s++)
-                    {
-                        if (MatchesSource(_loadedSources[s], sm.id) || MatchesSource(_loadedSources[s], sm.name))
-                        {
-                            _loadedSources[s].isEnabled = sm.isEnabled;
-                            break;
-                        }
-                    }
-                }
                 SaveInstalledSourcesToSettings();
                 PopulateNavigationTree();
                 PopulateInstalledSourcesList();
@@ -2164,7 +2212,6 @@ namespace Ecureuil
             EventHandler onSourceRefreshed = delegate
             {
                 PopulateNavigationTree();
-                PopulateInstalledSourcesList();
                 RefreshCurrentView();
             };
             sd.SourceEnabledChanged += onEnabledChanged;
@@ -2209,10 +2256,6 @@ namespace Ecureuil
             fallback.dateCreated = DateTime.Now;
             fallback.lastUpdated = DateTime.Now;
 
-            if (_loadedSources == null) _loadedSources = new List<SourceModel>();
-            _loadedSources.Add(fallback);
-            SaveInstalledSourcesToSettings();
-
             return fallback;
         }
 
@@ -2244,7 +2287,16 @@ namespace Ecureuil
                 if (allRes == DialogResult.Yes)
                 {
                     if (_loadedSources != null) _loadedSources.Clear();
-                    if (_loadedApps != null) _loadedApps.Clear();
+                    if (_loadedApps != null)
+                    {
+                        for (int a = _loadedApps.Count - 1; a >= 0; a--)
+                        {
+                            if (_loadedApps[a] == null || !_loadedApps[a].isInstalled)
+                            {
+                                _loadedApps.RemoveAt(a);
+                            }
+                        }
+                    }
                     SaveInstalledSourcesToSettings();
                     PopulateNavigationTree();
                     PopulateInstalledSourcesList();
@@ -2278,13 +2330,16 @@ namespace Ecureuil
                 {
                     for (int a = _loadedApps.Count - 1; a >= 0; a--)
                     {
-                        string src = _loadedApps[a] != null ? _loadedApps[a].source : null;
-                        if (!string.IsNullOrEmpty(src) &&
-                            (string.Compare(src, sourceToDelete, true) == 0 ||
-                             string.Compare(src, delId, true) == 0 ||
-                             string.Compare(src, delName, true) == 0))
+                        if (_loadedApps[a] != null && !_loadedApps[a].isInstalled)
                         {
-                            _loadedApps.RemoveAt(a);
+                            string src = _loadedApps[a].source;
+                            if (!string.IsNullOrEmpty(src) &&
+                                (string.Compare(src, sourceToDelete, true) == 0 ||
+                                 string.Compare(src, delId, true) == 0 ||
+                                 string.Compare(src, delName, true) == 0))
+                            {
+                                _loadedApps.RemoveAt(a);
+                            }
                         }
                     }
                 }
@@ -2498,11 +2553,7 @@ namespace Ecureuil
         {
             for (int i = 0; i < mainToolStrip.Items.Count; i++)
             {
-                ToolStripItem item = mainToolStrip.Items[i];
-                if (item is ToolStripButton || item is ToolStripLabel)
-                {
-                    item.DisplayStyle = style;
-                }
+                mainToolStrip.Items[i].DisplayStyle = style;
             }
             textOnlyMenuItem.Checked = (settingValue == 0);
             iconsOnlyMenuItem.Checked = (settingValue == 1);
@@ -2594,15 +2645,184 @@ namespace Ecureuil
                 }
                 finally
                 {
-                    if (this.IsHandleCreated && !this.IsDisposed)
-                    {
-                        this.BeginInvoke(new MethodInvoker(delegate
-                        {
-                            this.Cursor = Cursors.Default;
-                        }));
-                    }
+                    ResetCursorDefaultSafe();
                 }
             });
+        }
+
+        private void initialSetupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            initialSetup initialSetup = new initialSetup();
+            initialSetup.Show();
+        }
+
+        private bool IsUpdatesNode(TreeNode node)
+        {
+            if (node == null) return false;
+            string nodeName = (node.Name ?? "").Trim();
+            string tagStr = (node.Tag as string) ?? "";
+            string nodeText = (node.Text ?? "").Trim();
+
+            return string.Compare(nodeName, Resources.updates, true) == 0 ||
+                   string.Compare(tagStr, Resources.updates, true) == 0 ||
+                   string.Compare(nodeText, Resources.updates, true) == 0 ||
+                   string.Compare(nodeName, "updates", true) == 0 ||
+                   string.Compare(tagStr, "updates", true) == 0 ||
+                   string.Compare(nodeText, "Updates", true) == 0;
+        }
+
+        private bool IsUpdatesViewActive()
+        {
+            return IsUpdatesNode(categoryNavigationView.SelectedNode);
+        }
+
+        private bool IsAppUpdateAvailable(AppModel app)
+        {
+            if (app == null || !app.isInstalled) return false;
+
+            DateTime? availableDate = app.dateSource.HasValue ? app.dateSource : app.dateOriginal;
+            DateTime? installed = app.installedDate.HasValue ? app.installedDate : app.installedOn;
+
+            return availableDate.HasValue && installed.HasValue && availableDate.Value > installed.Value;
+        }
+
+        private List<AppModel> GetInstalledApps()
+        {
+            List<AppModel> installed = new List<AppModel>();
+            if (_loadedApps != null)
+            {
+                for (int i = 0; i < _loadedApps.Count; i++)
+                {
+                    if (_loadedApps[i] != null && _loadedApps[i].isInstalled)
+                    {
+                        installed.Add(_loadedApps[i]);
+                    }
+                }
+            }
+            return installed;
+        }
+
+        private List<AppModel> GetAvailableUpdates()
+        {
+            List<AppModel> updates = new List<AppModel>();
+            if (_loadedApps != null)
+            {
+                for (int i = 0; i < _loadedApps.Count; i++)
+                {
+                    AppModel app = _loadedApps[i];
+                    if (app != null && IsAppUpdateAvailable(app))
+                    {
+                        updates.Add(app);
+                    }
+                }
+            }
+            return updates;
+        }
+
+        private void ShowUpdatesView()
+        {
+            discoverSources.Visible = true;
+            discoverSources.SendToBack();
+            discoverSourcesText1.Text = Resources.updates ?? "Updates";
+            updateAllButton.Text = Resources.updateAll ?? "Update all";
+            updateAllButton.Visible = true;
+
+            List<AppModel> updates = GetAvailableUpdates();
+            updateAllButton.Enabled = (updates.Count > 0);
+
+            if (updates.Count == 0)
+            {
+                categoryItemView.Visible = false;
+                txtUpdatesStatus.Text = Environment.NewLine + Environment.NewLine + (Resources.noUpdatesAvailable ?? "No updates available.");
+                txtUpdatesStatus.Visible = true;
+                txtUpdatesStatus.BringToFront();
+            }
+            else
+            {
+                txtUpdatesStatus.Visible = false;
+                categoryItemView.Visible = true;
+                categoryItemView.BringToFront();
+                DisplayApps(updates, false, false);
+            }
+        }
+
+        private void CheckForUpdatesNow()
+        {
+            discoverSources.Visible = true;
+            discoverSources.SendToBack();
+            discoverSourcesText1.Text = Resources.updates ?? "Updates";
+            updateAllButton.Text = Resources.updateAll ?? "Update all";
+            updateAllButton.Visible = true;
+            updateAllButton.Enabled = false;
+
+            categoryItemView.Visible = false;
+            txtUpdatesStatus.Text = Environment.NewLine + Environment.NewLine + (Resources.checkingForUpdates ?? "Checking for updates...");
+            txtUpdatesStatus.Visible = true;
+            txtUpdatesStatus.BringToFront();
+            this.Refresh();
+
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                try
+                {
+                    if (_loadedSources != null)
+                    {
+                        for (int i = 0; i < _loadedSources.Count; i++)
+                        {
+                            SourceModel sm = _loadedSources[i];
+                            if (sm != null && sm.isEnabled)
+                            {
+                                LoadAndCacheSourceApps(sm, true);
+                            }
+                        }
+                    }
+
+                    if (_installationRegistry != null && _loadedApps != null)
+                    {
+                        _installationRegistry.ApplyStatusToApps(_loadedApps);
+                    }
+                }
+                catch { }
+
+                if (this.IsHandleCreated && !this.IsDisposed)
+                {
+                    this.BeginInvoke(new MethodInvoker(delegate
+                    {
+                        if (IsUpdatesViewActive())
+                        {
+                            ShowUpdatesView();
+                        }
+                    }));
+                }
+            });
+        }
+
+        private void updateAllButton_Click(object sender, EventArgs e)
+        {
+            List<AppModel> updates = GetAvailableUpdates();
+            if (updates == null || updates.Count == 0) return;
+
+            if (_installerService == null)
+            {
+                _installerService = new InstallerService(_installationRegistry ?? new InstallationRegistry());
+            }
+
+            for (int i = 0; i < updates.Count; i++)
+            {
+                AppModel app = updates[i];
+                if (app == null) continue;
+
+                URLdownload installerForm = new URLdownload(app, _installerService, _loadedApps, _cacheManager);
+                installerForm.Location = this.Location;
+                installerForm.ShowDialog(this);
+            }
+
+            if (_installationRegistry != null && _loadedApps != null)
+            {
+                _installationRegistry.ApplyStatusToApps(_loadedApps);
+            }
+
+            ShowUpdatesView();
         }
     }
 }

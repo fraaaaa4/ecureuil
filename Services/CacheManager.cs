@@ -82,29 +82,19 @@ namespace Ecureuil.Core.Services {
       return LoadFile(Path.Combine(_cachePath, "cache_app_" + SanitizeFileName(appId) + ".json"));
     }
 
-    public bool isAppCacheValid(string appId, TimeSpan maxAge) {
-      if (string.IsNullOrEmpty(appId)) return false;
+    private bool IsFileCacheValid(string fileName, TimeSpan maxAge) {
       if (!IsCacheEnabled) return false;
-      string fileName = "cache_app_" + SanitizeFileName(appId) + ".json";
       string filePath = Path.Combine(_cachePath, fileName);
+      return File.Exists(filePath) && (DateTime.Now - File.GetLastWriteTime(filePath)) < maxAge;
+    }
 
-      if (!File.Exists(filePath)) return false;
-
-      DateTime lastWriteTime = File.GetLastWriteTime(filePath);
-      return (DateTime.Now - lastWriteTime) < maxAge;
+    public bool isAppCacheValid(string appId, TimeSpan maxAge) {
+      return !string.IsNullOrEmpty(appId) && IsFileCacheValid("cache_app_" + SanitizeFileName(appId) + ".json", maxAge);
     }
 
     // Controlla se la cache e ancora valida rispetto al maxAge
     public bool isSourceCacheValid(string sourceId, TimeSpan maxAge) {
-      if (string.IsNullOrEmpty(sourceId)) return false;
-      if (!IsCacheEnabled) return false;
-      string fileName = "cache_catalog_" + SanitizeFileName(sourceId) + ".json";
-      string filePath = Path.Combine(_cachePath, fileName);
-
-      if (!File.Exists(filePath)) return false;
-
-      DateTime lastWriteTime = File.GetLastWriteTime(filePath);
-      return (DateTime.Now - lastWriteTime) < maxAge;
+      return !string.IsNullOrEmpty(sourceId) && IsFileCacheValid("cache_catalog_" + SanitizeFileName(sourceId) + ".json", maxAge);
     }
 
     public void SaveImageCache(string key, byte[] data) {

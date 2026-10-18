@@ -31,6 +31,7 @@ namespace Ecureuil
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.cacheTab = new System.Windows.Forms.TabPage();
             this.sizeGroupBox = new System.Windows.Forms.GroupBox();
+            this.selectAllButton = new System.Windows.Forms.Button();
             this.enableCacheLabel = new System.Windows.Forms.Label();
             this.enableCacheCheckbox = new System.Windows.Forms.CheckBox();
             this.cacheInnerTabControl = new System.Windows.Forms.TabControl();
@@ -38,14 +39,19 @@ namespace Ecureuil
             this.sourcesCacheListView = new System.Windows.Forms.ListView();
             this.colSourceHeaderName = new System.Windows.Forms.ColumnHeader();
             this.colSourceHeaderUpdated = new System.Windows.Forms.ColumnHeader();
+            this.colSourceHeaderSize = new System.Windows.Forms.ColumnHeader();
             this.appsTab = new System.Windows.Forms.TabPage();
             this.appsCacheListView = new System.Windows.Forms.ListView();
             this.colAppHeaderName = new System.Windows.Forms.ColumnHeader();
             this.colAppHeaderUpdated = new System.Windows.Forms.ColumnHeader();
+            this.colAppHeaderSize = new System.Windows.Forms.ColumnHeader();
             this.refreshCacheButton = new System.Windows.Forms.Button();
             this.deleteCacheButton = new System.Windows.Forms.Button();
             this.selectedCacheSizeLabel = new System.Windows.Forms.Label();
             this.installTab = new System.Windows.Forms.TabPage();
+            this.desktopGroup = new System.Windows.Forms.GroupBox();
+            this.desktopLabel = new System.Windows.Forms.Label();
+            this.desktopCheckbox = new System.Windows.Forms.CheckBox();
             this.startGroup = new System.Windows.Forms.GroupBox();
             this.startMenuLabel = new System.Windows.Forms.Label();
             this.startMenuCheck = new System.Windows.Forms.CheckBox();
@@ -57,33 +63,34 @@ namespace Ecureuil
             this.label1nstallLabel2 = new System.Windows.Forms.Label();
             this.installRadio1 = new System.Windows.Forms.RadioButton();
             this.installationLabel1 = new System.Windows.Forms.Label();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.OKButton = new System.Windows.Forms.Button();
-            this.CancelButton = new System.Windows.Forms.Button();
-            this.ApplyButton = new System.Windows.Forms.Button();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.fileTab = new System.Windows.Forms.TabPage();
-            this.cacheFileGroupBox = new System.Windows.Forms.GroupBox();
-            this.cacheFileLabel = new System.Windows.Forms.Label();
-            this.cacheFileTextbox = new System.Windows.Forms.TextBox();
-            this.browseCacheFile = new System.Windows.Forms.Button();
-            this.exploreCacheFileButton = new System.Windows.Forms.Button();
-            this.defaultCacheFile = new System.Windows.Forms.Button();
-            this.installedFileGroupbox = new System.Windows.Forms.GroupBox();
-            this.installedFileDefault = new System.Windows.Forms.Button();
-            this.installedFileExplore = new System.Windows.Forms.Button();
-            this.installedFileBrowse = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.installedFileLabel = new System.Windows.Forms.Label();
             this.screenshotFileGroupbox = new System.Windows.Forms.GroupBox();
             this.screenshotFileDefaultButton = new System.Windows.Forms.Button();
             this.screenshotExploreButton = new System.Windows.Forms.Button();
             this.screenshotFileBrowse = new System.Windows.Forms.Button();
             this.screenshotFileTextbox = new System.Windows.Forms.TextBox();
             this.screenshotFileLabel = new System.Windows.Forms.Label();
-            this.desktopGroup = new System.Windows.Forms.GroupBox();
-            this.desktopLabel = new System.Windows.Forms.Label();
-            this.desktopCheckbox = new System.Windows.Forms.CheckBox();
+            this.installedFileGroupbox = new System.Windows.Forms.GroupBox();
+            this.installedFileDefault = new System.Windows.Forms.Button();
+            this.installedFileExplore = new System.Windows.Forms.Button();
+            this.installedFileBrowse = new System.Windows.Forms.Button();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.installedFileLabel = new System.Windows.Forms.Label();
+            this.cacheFileGroupBox = new System.Windows.Forms.GroupBox();
+            this.defaultCacheFile = new System.Windows.Forms.Button();
+            this.exploreCacheFileButton = new System.Windows.Forms.Button();
+            this.browseCacheFile = new System.Windows.Forms.Button();
+            this.cacheFileTextbox = new System.Windows.Forms.TextBox();
+            this.cacheFileLabel = new System.Windows.Forms.Label();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.OKButton = new System.Windows.Forms.Button();
+            this.CancelButton = new System.Windows.Forms.Button();
+            this.ApplyButton = new System.Windows.Forms.Button();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.cacheInvalidLabel1 = new System.Windows.Forms.Label();
+            this.numericCaheValid = new System.Windows.Forms.NumericUpDown();
+            this.cacheInvalidExplain = new System.Windows.Forms.Label();
+            this.colSourceHeaderSize = new System.Windows.Forms.ColumnHeader();
             this.tabControl1.SuspendLayout();
             this.cacheTab.SuspendLayout();
             this.sizeGroupBox.SuspendLayout();
@@ -91,14 +98,15 @@ namespace Ecureuil
             this.sourcesTab.SuspendLayout();
             this.appsTab.SuspendLayout();
             this.installTab.SuspendLayout();
+            this.desktopGroup.SuspendLayout();
             this.startGroup.SuspendLayout();
             this.installingGroup.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.fileTab.SuspendLayout();
-            this.cacheFileGroupBox.SuspendLayout();
-            this.installedFileGroupbox.SuspendLayout();
             this.screenshotFileGroupbox.SuspendLayout();
-            this.desktopGroup.SuspendLayout();
+            this.installedFileGroupbox.SuspendLayout();
+            this.cacheFileGroupBox.SuspendLayout();
+            this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericCaheValid)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -110,22 +118,26 @@ namespace Ecureuil
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(380, 381);
+            this.tabControl1.Size = new System.Drawing.Size(380, 430);
             this.tabControl1.TabIndex = 0;
             // 
             // cacheTab
             // 
+            this.cacheTab.Controls.Add(this.cacheInvalidExplain);
+            this.cacheTab.Controls.Add(this.numericCaheValid);
+            this.cacheTab.Controls.Add(this.cacheInvalidLabel1);
             this.cacheTab.Controls.Add(this.sizeGroupBox);
             this.cacheTab.Location = new System.Drawing.Point(4, 22);
             this.cacheTab.Name = "cacheTab";
             this.cacheTab.Padding = new System.Windows.Forms.Padding(3);
-            this.cacheTab.Size = new System.Drawing.Size(372, 355);
+            this.cacheTab.Size = new System.Drawing.Size(372, 404);
             this.cacheTab.TabIndex = 0;
             this.cacheTab.Text = "Cache";
             this.cacheTab.UseVisualStyleBackColor = true;
             // 
             // sizeGroupBox
             // 
+            this.sizeGroupBox.Controls.Add(this.selectAllButton);
             this.sizeGroupBox.Controls.Add(this.enableCacheLabel);
             this.sizeGroupBox.Controls.Add(this.enableCacheCheckbox);
             this.sizeGroupBox.Controls.Add(this.cacheInnerTabControl);
@@ -138,6 +150,16 @@ namespace Ecureuil
             this.sizeGroupBox.TabIndex = 0;
             this.sizeGroupBox.TabStop = false;
             this.sizeGroupBox.Text = "Cache";
+            // 
+            // selectAllButton
+            // 
+            this.selectAllButton.Location = new System.Drawing.Point(94, 303);
+            this.selectAllButton.Name = "selectAllButton";
+            this.selectAllButton.Size = new System.Drawing.Size(70, 25);
+            this.selectAllButton.TabIndex = 6;
+            this.selectAllButton.Text = "Select all";
+            this.selectAllButton.UseVisualStyleBackColor = true;
+            this.selectAllButton.Click += new System.EventHandler(this.selectAllButton_Click);
             // 
             // enableCacheLabel
             // 
@@ -185,7 +207,8 @@ namespace Ecureuil
             this.sourcesCacheListView.CheckBoxes = true;
             this.sourcesCacheListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colSourceHeaderName,
-            this.colSourceHeaderUpdated});
+            this.colSourceHeaderUpdated,
+            this.colSourceHeaderSize});
             this.sourcesCacheListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.sourcesCacheListView.FullRowSelect = true;
             this.sourcesCacheListView.Location = new System.Drawing.Point(3, 3);
@@ -199,12 +222,17 @@ namespace Ecureuil
             // colSourceHeaderName
             // 
             this.colSourceHeaderName.Text = "Name";
-            this.colSourceHeaderName.Width = 175;
+            this.colSourceHeaderName.Width = 140;
             // 
             // colSourceHeaderUpdated
             // 
             this.colSourceHeaderUpdated.Text = "Last updated";
-            this.colSourceHeaderUpdated.Width = 125;
+            this.colSourceHeaderUpdated.Width = 110;
+            // 
+            // colSourceHeaderSize
+            // 
+            this.colSourceHeaderSize.Text = "Size";
+            this.colSourceHeaderSize.Width = 65;
             // 
             // appsTab
             // 
@@ -222,7 +250,8 @@ namespace Ecureuil
             this.appsCacheListView.CheckBoxes = true;
             this.appsCacheListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colAppHeaderName,
-            this.colAppHeaderUpdated});
+            this.colAppHeaderUpdated,
+            this.colAppHeaderSize});
             this.appsCacheListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.appsCacheListView.FullRowSelect = true;
             this.appsCacheListView.Location = new System.Drawing.Point(3, 3);
@@ -236,12 +265,17 @@ namespace Ecureuil
             // colAppHeaderName
             // 
             this.colAppHeaderName.Text = "Name";
-            this.colAppHeaderName.Width = 175;
+            this.colAppHeaderName.Width = 140;
             // 
             // colAppHeaderUpdated
             // 
             this.colAppHeaderUpdated.Text = "Last updated";
-            this.colAppHeaderUpdated.Width = 125;
+            this.colAppHeaderUpdated.Width = 110;
+            // 
+            // colAppHeaderSize
+            // 
+            this.colAppHeaderSize.Text = "Size";
+            this.colAppHeaderSize.Width = 65;
             // 
             // refreshCacheButton
             // 
@@ -280,10 +314,40 @@ namespace Ecureuil
             this.installTab.Location = new System.Drawing.Point(4, 22);
             this.installTab.Name = "installTab";
             this.installTab.Padding = new System.Windows.Forms.Padding(3);
-            this.installTab.Size = new System.Drawing.Size(372, 355);
+            this.installTab.Size = new System.Drawing.Size(372, 404);
             this.installTab.TabIndex = 1;
             this.installTab.Text = "Installation";
             this.installTab.UseVisualStyleBackColor = true;
+            // 
+            // desktopGroup
+            // 
+            this.desktopGroup.Controls.Add(this.desktopLabel);
+            this.desktopGroup.Controls.Add(this.desktopCheckbox);
+            this.desktopGroup.Location = new System.Drawing.Point(8, 270);
+            this.desktopGroup.Name = "desktopGroup";
+            this.desktopGroup.Size = new System.Drawing.Size(356, 79);
+            this.desktopGroup.TabIndex = 13;
+            this.desktopGroup.TabStop = false;
+            this.desktopGroup.Text = "Desktop";
+            // 
+            // desktopLabel
+            // 
+            this.desktopLabel.Location = new System.Drawing.Point(14, 38);
+            this.desktopLabel.Name = "desktopLabel";
+            this.desktopLabel.Size = new System.Drawing.Size(327, 26);
+            this.desktopLabel.TabIndex = 6;
+            this.desktopLabel.Text = "If enabled, Ecureuil creates a link of your installed app directly in your Deskto" +
+                "p. Note that this works only with portable apps.";
+            // 
+            // desktopCheckbox
+            // 
+            this.desktopCheckbox.AutoSize = true;
+            this.desktopCheckbox.Location = new System.Drawing.Point(17, 19);
+            this.desktopCheckbox.Name = "desktopCheckbox";
+            this.desktopCheckbox.Size = new System.Drawing.Size(215, 17);
+            this.desktopCheckbox.TabIndex = 0;
+            this.desktopCheckbox.Text = "Add to my Desktop a link to the program";
+            this.desktopCheckbox.UseVisualStyleBackColor = true;
             // 
             // startGroup
             // 
@@ -401,47 +465,6 @@ namespace Ecureuil
             this.installationLabel1.TabIndex = 5;
             this.installationLabel1.Text = "Directory in which the installation files are saved:";
             // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.OKButton);
-            this.panel1.Controls.Add(this.CancelButton);
-            this.panel1.Controls.Add(this.ApplyButton);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 381);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(380, 39);
-            this.panel1.TabIndex = 1;
-            // 
-            // OKButton
-            // 
-            this.OKButton.Location = new System.Drawing.Point(131, 8);
-            this.OKButton.Name = "OKButton";
-            this.OKButton.Size = new System.Drawing.Size(75, 23);
-            this.OKButton.TabIndex = 2;
-            this.OKButton.Text = "OK";
-            this.OKButton.UseVisualStyleBackColor = true;
-            this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
-            // 
-            // CancelButton
-            // 
-            this.CancelButton.Location = new System.Drawing.Point(212, 8);
-            this.CancelButton.Name = "CancelButton";
-            this.CancelButton.Size = new System.Drawing.Size(75, 23);
-            this.CancelButton.TabIndex = 1;
-            this.CancelButton.Text = "Cancel";
-            this.CancelButton.UseVisualStyleBackColor = true;
-            this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
-            // 
-            // ApplyButton
-            // 
-            this.ApplyButton.Location = new System.Drawing.Point(293, 8);
-            this.ApplyButton.Name = "ApplyButton";
-            this.ApplyButton.Size = new System.Drawing.Size(75, 23);
-            this.ApplyButton.TabIndex = 0;
-            this.ApplyButton.Text = "Apply";
-            this.ApplyButton.UseVisualStyleBackColor = true;
-            this.ApplyButton.Click += new System.EventHandler(this.ApplyButton_Click);
-            // 
             // fileTab
             // 
             this.fileTab.Controls.Add(this.screenshotFileGroupbox);
@@ -453,128 +476,6 @@ namespace Ecureuil
             this.fileTab.TabIndex = 2;
             this.fileTab.Text = "Files and folders";
             this.fileTab.UseVisualStyleBackColor = true;
-            // 
-            // cacheFileGroupBox
-            // 
-            this.cacheFileGroupBox.Controls.Add(this.defaultCacheFile);
-            this.cacheFileGroupBox.Controls.Add(this.exploreCacheFileButton);
-            this.cacheFileGroupBox.Controls.Add(this.browseCacheFile);
-            this.cacheFileGroupBox.Controls.Add(this.cacheFileTextbox);
-            this.cacheFileGroupBox.Controls.Add(this.cacheFileLabel);
-            this.cacheFileGroupBox.Location = new System.Drawing.Point(8, 7);
-            this.cacheFileGroupBox.Name = "cacheFileGroupBox";
-            this.cacheFileGroupBox.Size = new System.Drawing.Size(356, 110);
-            this.cacheFileGroupBox.TabIndex = 0;
-            this.cacheFileGroupBox.TabStop = false;
-            this.cacheFileGroupBox.Text = "Cache";
-            // 
-            // cacheFileLabel
-            // 
-            this.cacheFileLabel.AutoSize = true;
-            this.cacheFileLabel.Location = new System.Drawing.Point(14, 26);
-            this.cacheFileLabel.Name = "cacheFileLabel";
-            this.cacheFileLabel.Size = new System.Drawing.Size(223, 13);
-            this.cacheFileLabel.TabIndex = 0;
-            this.cacheFileLabel.Text = "Path of stored cache items (data and images):";
-            // 
-            // cacheFileTextbox
-            // 
-            this.cacheFileTextbox.Location = new System.Drawing.Point(17, 42);
-            this.cacheFileTextbox.Name = "cacheFileTextbox";
-            this.cacheFileTextbox.Size = new System.Drawing.Size(316, 20);
-            this.cacheFileTextbox.TabIndex = 1;
-            this.cacheFileTextbox.TextChanged += new System.EventHandler(this.cacheFileTextbox_TextChanged);
-            // 
-            // browseCacheFile
-            // 
-            this.browseCacheFile.Location = new System.Drawing.Point(258, 68);
-            this.browseCacheFile.Name = "browseCacheFile";
-            this.browseCacheFile.Size = new System.Drawing.Size(75, 23);
-            this.browseCacheFile.TabIndex = 2;
-            this.browseCacheFile.Text = "Browse";
-            this.browseCacheFile.UseVisualStyleBackColor = true;
-            this.browseCacheFile.Click += new System.EventHandler(this.browseCacheFile_Click);
-            // 
-            // exploreCacheFileButton
-            // 
-            this.exploreCacheFileButton.Location = new System.Drawing.Point(177, 68);
-            this.exploreCacheFileButton.Name = "exploreCacheFileButton";
-            this.exploreCacheFileButton.Size = new System.Drawing.Size(75, 23);
-            this.exploreCacheFileButton.TabIndex = 3;
-            this.exploreCacheFileButton.Text = "Explore";
-            this.exploreCacheFileButton.UseVisualStyleBackColor = true;
-            this.exploreCacheFileButton.Click += new System.EventHandler(this.exploreCacheFileButton_Click);
-            // 
-            // defaultCacheFile
-            // 
-            this.defaultCacheFile.Location = new System.Drawing.Point(17, 68);
-            this.defaultCacheFile.Name = "defaultCacheFile";
-            this.defaultCacheFile.Size = new System.Drawing.Size(117, 23);
-            this.defaultCacheFile.TabIndex = 4;
-            this.defaultCacheFile.Text = "Restore to default";
-            this.defaultCacheFile.UseVisualStyleBackColor = true;
-            this.defaultCacheFile.Click += new System.EventHandler(this.defaultCacheFile_Click);
-            // 
-            // installedFileGroupbox
-            // 
-            this.installedFileGroupbox.Controls.Add(this.installedFileDefault);
-            this.installedFileGroupbox.Controls.Add(this.installedFileExplore);
-            this.installedFileGroupbox.Controls.Add(this.installedFileBrowse);
-            this.installedFileGroupbox.Controls.Add(this.textBox2);
-            this.installedFileGroupbox.Controls.Add(this.installedFileLabel);
-            this.installedFileGroupbox.Location = new System.Drawing.Point(8, 123);
-            this.installedFileGroupbox.Name = "installedFileGroupbox";
-            this.installedFileGroupbox.Size = new System.Drawing.Size(356, 110);
-            this.installedFileGroupbox.TabIndex = 5;
-            this.installedFileGroupbox.TabStop = false;
-            this.installedFileGroupbox.Text = "Installed files";
-            // 
-            // installedFileDefault
-            // 
-            this.installedFileDefault.Location = new System.Drawing.Point(17, 68);
-            this.installedFileDefault.Name = "installedFileDefault";
-            this.installedFileDefault.Size = new System.Drawing.Size(117, 23);
-            this.installedFileDefault.TabIndex = 4;
-            this.installedFileDefault.Text = "Restore to default";
-            this.installedFileDefault.UseVisualStyleBackColor = true;
-            this.installedFileDefault.Click += new System.EventHandler(this.installedFileDefault_Click);
-            // 
-            // installedFileExplore
-            // 
-            this.installedFileExplore.Location = new System.Drawing.Point(177, 68);
-            this.installedFileExplore.Name = "installedFileExplore";
-            this.installedFileExplore.Size = new System.Drawing.Size(75, 23);
-            this.installedFileExplore.TabIndex = 3;
-            this.installedFileExplore.Text = "Explore";
-            this.installedFileExplore.UseVisualStyleBackColor = true;
-            this.installedFileExplore.Click += new System.EventHandler(this.installedFileExplore_Click);
-            // 
-            // installedFileBrowse
-            // 
-            this.installedFileBrowse.Location = new System.Drawing.Point(258, 68);
-            this.installedFileBrowse.Name = "installedFileBrowse";
-            this.installedFileBrowse.Size = new System.Drawing.Size(75, 23);
-            this.installedFileBrowse.TabIndex = 2;
-            this.installedFileBrowse.Text = "Browse";
-            this.installedFileBrowse.UseVisualStyleBackColor = true;
-            this.installedFileBrowse.Click += new System.EventHandler(this.installedFileBrowse_Click);
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(17, 42);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(316, 20);
-            this.textBox2.TabIndex = 1;
-            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
-            // 
-            // installedFileLabel
-            // 
-            this.installedFileLabel.AutoSize = true;
-            this.installedFileLabel.Location = new System.Drawing.Point(14, 26);
-            this.installedFileLabel.Name = "installedFileLabel";
-            this.installedFileLabel.Size = new System.Drawing.Size(111, 13);
-            this.installedFileLabel.TabIndex = 0;
-            this.installedFileLabel.Text = "Path of installed apps:";
             // 
             // screenshotFileGroupbox
             // 
@@ -637,41 +538,200 @@ namespace Ecureuil
             this.screenshotFileLabel.TabIndex = 0;
             this.screenshotFileLabel.Text = "Path of saved screenshots:";
             // 
-            // desktopGroup
+            // installedFileGroupbox
             // 
-            this.desktopGroup.Controls.Add(this.desktopLabel);
-            this.desktopGroup.Controls.Add(this.desktopCheckbox);
-            this.desktopGroup.Location = new System.Drawing.Point(8, 270);
-            this.desktopGroup.Name = "desktopGroup";
-            this.desktopGroup.Size = new System.Drawing.Size(356, 79);
-            this.desktopGroup.TabIndex = 13;
-            this.desktopGroup.TabStop = false;
-            this.desktopGroup.Text = "Desktop";
+            this.installedFileGroupbox.Controls.Add(this.installedFileDefault);
+            this.installedFileGroupbox.Controls.Add(this.installedFileExplore);
+            this.installedFileGroupbox.Controls.Add(this.installedFileBrowse);
+            this.installedFileGroupbox.Controls.Add(this.textBox2);
+            this.installedFileGroupbox.Controls.Add(this.installedFileLabel);
+            this.installedFileGroupbox.Location = new System.Drawing.Point(8, 123);
+            this.installedFileGroupbox.Name = "installedFileGroupbox";
+            this.installedFileGroupbox.Size = new System.Drawing.Size(356, 110);
+            this.installedFileGroupbox.TabIndex = 5;
+            this.installedFileGroupbox.TabStop = false;
+            this.installedFileGroupbox.Text = "Installed files";
             // 
-            // desktopLabel
+            // installedFileDefault
             // 
-            this.desktopLabel.Location = new System.Drawing.Point(14, 38);
-            this.desktopLabel.Name = "desktopLabel";
-            this.desktopLabel.Size = new System.Drawing.Size(327, 26);
-            this.desktopLabel.TabIndex = 6;
-            this.desktopLabel.Text = "If enabled, Ecureuil creates a link of your installed app directly in your Deskto" +
-                "p. Note that this works only with portable apps.";
+            this.installedFileDefault.Location = new System.Drawing.Point(17, 68);
+            this.installedFileDefault.Name = "installedFileDefault";
+            this.installedFileDefault.Size = new System.Drawing.Size(117, 23);
+            this.installedFileDefault.TabIndex = 4;
+            this.installedFileDefault.Text = "Restore to default";
+            this.installedFileDefault.UseVisualStyleBackColor = true;
+            this.installedFileDefault.Click += new System.EventHandler(this.installedFileDefault_Click);
             // 
-            // desktopCheckbox
+            // installedFileExplore
             // 
-            this.desktopCheckbox.AutoSize = true;
-            this.desktopCheckbox.Location = new System.Drawing.Point(17, 19);
-            this.desktopCheckbox.Name = "desktopCheckbox";
-            this.desktopCheckbox.Size = new System.Drawing.Size(215, 17);
-            this.desktopCheckbox.TabIndex = 0;
-            this.desktopCheckbox.Text = "Add to my Desktop a link to the program";
-            this.desktopCheckbox.UseVisualStyleBackColor = true;
+            this.installedFileExplore.Location = new System.Drawing.Point(177, 68);
+            this.installedFileExplore.Name = "installedFileExplore";
+            this.installedFileExplore.Size = new System.Drawing.Size(75, 23);
+            this.installedFileExplore.TabIndex = 3;
+            this.installedFileExplore.Text = "Explore";
+            this.installedFileExplore.UseVisualStyleBackColor = true;
+            this.installedFileExplore.Click += new System.EventHandler(this.installedFileExplore_Click);
+            // 
+            // installedFileBrowse
+            // 
+            this.installedFileBrowse.Location = new System.Drawing.Point(258, 68);
+            this.installedFileBrowse.Name = "installedFileBrowse";
+            this.installedFileBrowse.Size = new System.Drawing.Size(75, 23);
+            this.installedFileBrowse.TabIndex = 2;
+            this.installedFileBrowse.Text = "Browse";
+            this.installedFileBrowse.UseVisualStyleBackColor = true;
+            this.installedFileBrowse.Click += new System.EventHandler(this.installedFileBrowse_Click);
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(17, 42);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(316, 20);
+            this.textBox2.TabIndex = 1;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            // 
+            // installedFileLabel
+            // 
+            this.installedFileLabel.AutoSize = true;
+            this.installedFileLabel.Location = new System.Drawing.Point(14, 26);
+            this.installedFileLabel.Name = "installedFileLabel";
+            this.installedFileLabel.Size = new System.Drawing.Size(111, 13);
+            this.installedFileLabel.TabIndex = 0;
+            this.installedFileLabel.Text = "Path of installed apps:";
+            // 
+            // cacheFileGroupBox
+            // 
+            this.cacheFileGroupBox.Controls.Add(this.defaultCacheFile);
+            this.cacheFileGroupBox.Controls.Add(this.exploreCacheFileButton);
+            this.cacheFileGroupBox.Controls.Add(this.browseCacheFile);
+            this.cacheFileGroupBox.Controls.Add(this.cacheFileTextbox);
+            this.cacheFileGroupBox.Controls.Add(this.cacheFileLabel);
+            this.cacheFileGroupBox.Location = new System.Drawing.Point(8, 7);
+            this.cacheFileGroupBox.Name = "cacheFileGroupBox";
+            this.cacheFileGroupBox.Size = new System.Drawing.Size(356, 110);
+            this.cacheFileGroupBox.TabIndex = 0;
+            this.cacheFileGroupBox.TabStop = false;
+            this.cacheFileGroupBox.Text = "Cache";
+            // 
+            // defaultCacheFile
+            // 
+            this.defaultCacheFile.Location = new System.Drawing.Point(17, 68);
+            this.defaultCacheFile.Name = "defaultCacheFile";
+            this.defaultCacheFile.Size = new System.Drawing.Size(117, 23);
+            this.defaultCacheFile.TabIndex = 4;
+            this.defaultCacheFile.Text = "Restore to default";
+            this.defaultCacheFile.UseVisualStyleBackColor = true;
+            this.defaultCacheFile.Click += new System.EventHandler(this.defaultCacheFile_Click);
+            // 
+            // exploreCacheFileButton
+            // 
+            this.exploreCacheFileButton.Location = new System.Drawing.Point(177, 68);
+            this.exploreCacheFileButton.Name = "exploreCacheFileButton";
+            this.exploreCacheFileButton.Size = new System.Drawing.Size(75, 23);
+            this.exploreCacheFileButton.TabIndex = 3;
+            this.exploreCacheFileButton.Text = "Explore";
+            this.exploreCacheFileButton.UseVisualStyleBackColor = true;
+            this.exploreCacheFileButton.Click += new System.EventHandler(this.exploreCacheFileButton_Click);
+            // 
+            // browseCacheFile
+            // 
+            this.browseCacheFile.Location = new System.Drawing.Point(258, 68);
+            this.browseCacheFile.Name = "browseCacheFile";
+            this.browseCacheFile.Size = new System.Drawing.Size(75, 23);
+            this.browseCacheFile.TabIndex = 2;
+            this.browseCacheFile.Text = "Browse";
+            this.browseCacheFile.UseVisualStyleBackColor = true;
+            this.browseCacheFile.Click += new System.EventHandler(this.browseCacheFile_Click);
+            // 
+            // cacheFileTextbox
+            // 
+            this.cacheFileTextbox.Location = new System.Drawing.Point(17, 42);
+            this.cacheFileTextbox.Name = "cacheFileTextbox";
+            this.cacheFileTextbox.Size = new System.Drawing.Size(316, 20);
+            this.cacheFileTextbox.TabIndex = 1;
+            this.cacheFileTextbox.TextChanged += new System.EventHandler(this.cacheFileTextbox_TextChanged);
+            // 
+            // cacheFileLabel
+            // 
+            this.cacheFileLabel.AutoSize = true;
+            this.cacheFileLabel.Location = new System.Drawing.Point(14, 26);
+            this.cacheFileLabel.Name = "cacheFileLabel";
+            this.cacheFileLabel.Size = new System.Drawing.Size(223, 13);
+            this.cacheFileLabel.TabIndex = 0;
+            this.cacheFileLabel.Text = "Path of stored cache items (data and images):";
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.OKButton);
+            this.panel1.Controls.Add(this.CancelButton);
+            this.panel1.Controls.Add(this.ApplyButton);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel1.Location = new System.Drawing.Point(0, 430);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(380, 39);
+            this.panel1.TabIndex = 1;
+            // 
+            // OKButton
+            // 
+            this.OKButton.Location = new System.Drawing.Point(131, 8);
+            this.OKButton.Name = "OKButton";
+            this.OKButton.Size = new System.Drawing.Size(75, 23);
+            this.OKButton.TabIndex = 2;
+            this.OKButton.Text = "OK";
+            this.OKButton.UseVisualStyleBackColor = true;
+            this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
+            // 
+            // CancelButton
+            // 
+            this.CancelButton.Location = new System.Drawing.Point(212, 8);
+            this.CancelButton.Name = "CancelButton";
+            this.CancelButton.Size = new System.Drawing.Size(75, 23);
+            this.CancelButton.TabIndex = 1;
+            this.CancelButton.Text = "Cancel";
+            this.CancelButton.UseVisualStyleBackColor = true;
+            this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
+            // 
+            // ApplyButton
+            // 
+            this.ApplyButton.Location = new System.Drawing.Point(293, 8);
+            this.ApplyButton.Name = "ApplyButton";
+            this.ApplyButton.Size = new System.Drawing.Size(75, 23);
+            this.ApplyButton.TabIndex = 0;
+            this.ApplyButton.Text = "Apply";
+            this.ApplyButton.UseVisualStyleBackColor = true;
+            this.ApplyButton.Click += new System.EventHandler(this.ApplyButton_Click);
+            // 
+            // cacheInvalidLabel1
+            // 
+            this.cacheInvalidLabel1.Location = new System.Drawing.Point(12, 354);
+            this.cacheInvalidLabel1.Name = "cacheInvalidLabel1";
+            this.cacheInvalidLabel1.Size = new System.Drawing.Size(336, 26);
+            this.cacheInvalidLabel1.TabIndex = 7;
+            this.cacheInvalidLabel1.Text = "A cache should be deemed as invalid after                     hour(s).";
+            // 
+            // numericCaheValid
+            // 
+            this.numericCaheValid.Location = new System.Drawing.Point(225, 351);
+            this.numericCaheValid.Name = "numericCaheValid";
+            this.numericCaheValid.Size = new System.Drawing.Size(44, 20);
+            this.numericCaheValid.TabIndex = 9;
+            this.numericCaheValid.ValueChanged += new System.EventHandler(this.numericCaheValid_ValueChanged);
+            // 
+            // cacheInvalidExplain
+            // 
+            this.cacheInvalidExplain.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cacheInvalidExplain.Location = new System.Drawing.Point(13, 372);
+            this.cacheInvalidExplain.Name = "cacheInvalidExplain";
+            this.cacheInvalidExplain.Size = new System.Drawing.Size(341, 24);
+            this.cacheInvalidExplain.TabIndex = 10;
+            this.cacheInvalidExplain.Text = "When the time set here passes, next time Ecureuil loads again, it\'ll try to refre" +
+                "sh its cache.";
             // 
             // settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(380, 420);
+            this.ClientSize = new System.Drawing.Size(380, 469);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -691,20 +751,21 @@ namespace Ecureuil
             this.sourcesTab.ResumeLayout(false);
             this.appsTab.ResumeLayout(false);
             this.installTab.ResumeLayout(false);
+            this.desktopGroup.ResumeLayout(false);
+            this.desktopGroup.PerformLayout();
             this.startGroup.ResumeLayout(false);
             this.startGroup.PerformLayout();
             this.installingGroup.ResumeLayout(false);
             this.installingGroup.PerformLayout();
-            this.panel1.ResumeLayout(false);
             this.fileTab.ResumeLayout(false);
-            this.cacheFileGroupBox.ResumeLayout(false);
-            this.cacheFileGroupBox.PerformLayout();
-            this.installedFileGroupbox.ResumeLayout(false);
-            this.installedFileGroupbox.PerformLayout();
             this.screenshotFileGroupbox.ResumeLayout(false);
             this.screenshotFileGroupbox.PerformLayout();
-            this.desktopGroup.ResumeLayout(false);
-            this.desktopGroup.PerformLayout();
+            this.installedFileGroupbox.ResumeLayout(false);
+            this.installedFileGroupbox.PerformLayout();
+            this.cacheFileGroupBox.ResumeLayout(false);
+            this.cacheFileGroupBox.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numericCaheValid)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -767,5 +828,11 @@ namespace Ecureuil
         private System.Windows.Forms.Button screenshotFileBrowse;
         private System.Windows.Forms.TextBox screenshotFileTextbox;
         private System.Windows.Forms.Label screenshotFileLabel;
+        private System.Windows.Forms.Button selectAllButton;
+        private System.Windows.Forms.NumericUpDown numericCaheValid;
+        private System.Windows.Forms.Label cacheInvalidLabel1;
+        private System.Windows.Forms.Label cacheInvalidExplain;
+        private System.Windows.Forms.ColumnHeader colSourceHeaderSize;
+        private System.Windows.Forms.ColumnHeader colAppHeaderSize;
     }
 }

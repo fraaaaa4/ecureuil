@@ -12,28 +12,15 @@ namespace Ecureuil
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-            Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
             try
             {
-                Application.Run(new mainWindow());
+                System.Net.ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072 | (System.Net.SecurityProtocolType)768 | System.Net.SecurityProtocolType.Tls | System.Net.SecurityProtocolType.Ssl3;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Fatal Error: " + ex.ToString(), "Ecureuil Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+            catch { }
 
-        static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
-        {
-            MessageBox.Show("Thread Error: " + (e.Exception != null ? e.Exception.ToString() : "Unknown"), "Ecureuil Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            MessageBox.Show("Domain Error: " + (e.ExceptionObject != null ? e.ExceptionObject.ToString() : "Unknown"), "Ecureuil Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new mainWindow());
         }
     }
 }
